@@ -24,11 +24,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="bg-primary text-primary-foreground text-sm py-2 hidden md:block">
         <div className="container flex justify-between items-center">
           <div className="flex items-center gap-6">
-            <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" /> +91 98765 43210</span>
+            <a href="tel:+918080321805" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Phone className="w-3.5 h-3.5" /> +91 80803 21805</a>
             <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> info@palclasses.com</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Main Road, City Center</span>
+            <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Wadala East, Mumbai</span>
           </div>
         </div>
       </div>
@@ -117,7 +117,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <span className="font-heading font-bold text-xl">Pal Classes</span>
               </div>
               <p className="text-background/70 text-sm leading-relaxed">
-                Shaping bright futures with quality education since 2014. We provide personalized coaching for classes 1-12 across all major boards.
+                Shaping bright futures with quality education since 2014. We provide personalized coaching for classes 1-12 across CBSE, ICSE & State Board in Wadala, Mumbai.
               </p>
               <div className="flex gap-3 mt-4">
                 <a href="#" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Facebook className="w-4 h-4" /></a>
@@ -152,23 +152,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div>
               <h4 className="font-heading font-semibold text-lg mb-4">Contact Info</h4>
               <ul className="space-y-3 text-sm text-background/70">
-                <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> Vadala, Mumbai, Maharashtra - 400031</li>
-                <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> +91 98765 43210</li>
+                <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> 17, 2/4 Barkat Ali Nagar, Salt Pans Road, Wadala East, Mumbai – 400037, Maharashtra, India</li>
+                <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+918080321805" className="hover:text-accent transition-colors">+91 80803 21805</a></li>
+                <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+919768387999" className="hover:text-accent transition-colors">+91 97683 87999</a></li>
                 <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0" /> info@palclasses.com</li>
               </ul>
             </div>
           </div>
         </div>
         <div className="border-t border-background/10">
-          <div className="container py-4 text-center text-sm text-background/50">
-            © {new Date().getFullYear()} Pal Classes. All rights reserved.
+          <div className="container py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-background/50">
+            <span>© 2026 Pal Classes. All rights reserved.</span>
+            <span>Created & Designed by <a href="https://vikaspalprojects.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent/80 transition-colors font-medium">Eng. Vikas Pal</a></span>
           </div>
         </div>
       </footer>
 
       {/* WhatsApp Floating Button */}
       <a
-        href="https://wa.me/919876543210?text=Hello%20Pal%20Classes!%20I%20want%20to%20know%20more%20about%20your%20courses."
+        href="https://wa.me/918080321805?text=Hello%20Pal%20Classes!%20I%20want%20to%20know%20more%20about%20your%20courses."
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[hsl(142,70%,45%)] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-110 animate-float"
