@@ -2,9 +2,8 @@ import { Award, Trophy, Star, TrendingUp } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import celebratingImg from "@/assets/students-celebrating.jpg";
 import topperSuhela from "@/assets/topper-suhela.jpg";
-
-import topperAlmira from "@/assets/topper-pooja.jpg";
-import topperPooja from "@/assets/topper-almira.jpg";
+import topperAlmira from "@/assets/topper-almira.jpg";
+import topperPooja from "@/assets/topper-pooja.jpg";
 import topperPrashant from "@/assets/topper-prashant.jpg";
 import topperFareen from "@/assets/topper-fareen.jpg";
 import topperNirjala from "@/assets/topper-nirjala.jpg";
