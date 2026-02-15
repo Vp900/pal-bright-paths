@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Clock, Users, CheckCircle } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const courses = [
   {
@@ -49,59 +50,63 @@ const courses = [
   },
 ];
 
-const Courses = () => (
-  <>
-    <section className="bg-hero-gradient py-20">
-      <div className="container text-center">
-        <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">Our Courses</h1>
-        <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">Comprehensive programs from Nursery to Class 10, designed to build strong foundations and achieve top results.</p>
-      </div>
-    </section>
+const Courses = () => {
+  useScrollAnimation();
 
-    <section className="py-16 md:py-24">
-      <div className="container space-y-12">
-        {courses.map((course, idx) => (
-          <div key={course.level} className={`bg-card rounded-2xl border overflow-hidden shadow-sm ${idx % 2 === 1 ? 'md:flex-row-reverse' : ''} md:flex`}>
-            <div className={`${course.color} p-8 md:w-80 flex flex-col items-center justify-center shrink-0`}>
-              <span className="text-6xl mb-4">{course.icon}</span>
-              <h2 className="font-heading text-2xl font-bold text-center">{course.level}</h2>
-              <p className="text-muted-foreground font-medium">{course.classes}</p>
-            </div>
-            <div className="p-6 md:p-8 flex-1">
-              <div className="grid sm:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h3 className="font-heading font-semibold mb-3 flex items-center gap-2"><BookOpen className="w-4 h-4 text-primary" /> Subjects</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {course.subjects.map((s) => (
-                      <span key={s} className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">{s}</span>
-                    ))}
+  return (
+    <>
+      <section className="bg-hero-gradient py-20">
+        <div className="container text-center">
+          <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">Our Courses</h1>
+          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">Comprehensive programs from Nursery to Class 10, designed to build strong foundations and achieve top results.</p>
+        </div>
+      </section>
+
+      <section className="py-16 md:py-24">
+        <div className="container space-y-12">
+          {courses.map((course, idx) => (
+            <div key={course.level} className={`bg-card rounded-2xl border overflow-hidden shadow-sm ${idx % 2 === 1 ? 'md:flex-row-reverse' : ''} md:flex gsap-fade-up`}>
+              <div className={`${course.color} p-8 md:w-80 flex flex-col items-center justify-center shrink-0`}>
+                <span className="text-6xl mb-4">{course.icon}</span>
+                <h2 className="font-heading text-2xl font-bold text-center">{course.level}</h2>
+                <p className="text-muted-foreground font-medium">{course.classes}</p>
+              </div>
+              <div className="p-6 md:p-8 flex-1">
+                <div className="grid sm:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <h3 className="font-heading font-semibold mb-3 flex items-center gap-2"><BookOpen className="w-4 h-4 text-primary" /> Subjects</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {course.subjects.map((s) => (
+                        <span key={s} className="bg-primary/10 text-primary text-xs font-medium px-3 py-1 rounded-full">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-semibold mb-3 flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary" /> Key Features</h3>
+                    <ul className="space-y-1.5">
+                      {course.features.map((f) => (
+                        <li key={f} className="text-sm text-muted-foreground flex items-start gap-2">
+                          <span className="text-accent mt-1">•</span>{f}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
-                <div>
-                  <h3 className="font-heading font-semibold mb-3 flex items-center gap-2"><CheckCircle className="w-4 h-4 text-primary" /> Key Features</h3>
-                  <ul className="space-y-1.5">
-                    {course.features.map((f) => (
-                      <li key={f} className="text-sm text-muted-foreground flex items-start gap-2">
-                        <span className="text-accent mt-1">•</span>{f}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
+                  <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" />{course.duration}</span>
+                  <span className="flex items-center gap-1.5"><Users className="w-4 h-4" />{course.batchSize}</span>
                 </div>
+                <p className="text-sm text-muted-foreground mb-6"><strong>Teaching Method:</strong> {course.method}</p>
+                <Link to="/admission">
+                  <Button>Enroll Now</Button>
+                </Link>
               </div>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-6">
-                <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" />{course.duration}</span>
-                <span className="flex items-center gap-1.5"><Users className="w-4 h-4" />{course.batchSize}</span>
-              </div>
-              <p className="text-sm text-muted-foreground mb-6"><strong>Teaching Method:</strong> {course.method}</p>
-              <Link to="/admission">
-                <Button>Enroll Now</Button>
-              </Link>
             </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  </>
-);
+          ))}
+        </div>
+      </section>
+    </>
+  );
+};
 
 export default Courses;

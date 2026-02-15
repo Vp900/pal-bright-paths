@@ -1,19 +1,30 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import heroImg from "@/assets/hero-classroom.jpg";
 import classroomImg from "@/assets/classroom-interior.jpg";
 import studentsImg from "@/assets/students-studying.jpg";
 import celebratingImg from "@/assets/students-celebrating.jpg";
+import scienceLabImg from "@/assets/science-lab.jpg";
+import sportsImg from "@/assets/sports-day.jpg";
+import prizeImg from "@/assets/prize-distribution.jpg";
+import mathImg from "@/assets/math-class.jpg";
+import libraryImg from "@/assets/library.jpg";
+import parentImg from "@/assets/parent-meeting.jpg";
 
 const images = [
   { src: heroImg, alt: "Classroom teaching session", category: "Teaching" },
   { src: classroomImg, alt: "Modern classroom interior", category: "Classrooms" },
   { src: studentsImg, alt: "Students studying together", category: "Activities" },
   { src: celebratingImg, alt: "Students celebrating results", category: "Events" },
+  { src: scienceLabImg, alt: "Science lab experiments", category: "Teaching" },
+  { src: sportsImg, alt: "Annual sports day", category: "Events" },
+  { src: prizeImg, alt: "Prize distribution ceremony", category: "Events" },
+  { src: mathImg, alt: "Mathematics classroom session", category: "Teaching" },
+  { src: libraryImg, alt: "Library and reading area", category: "Classrooms" },
+  { src: parentImg, alt: "Parent-teacher meeting", category: "Activities" },
   { src: heroImg, alt: "Interactive learning session", category: "Teaching" },
-  { src: classroomImg, alt: "Well-equipped classroom", category: "Classrooms" },
-  { src: studentsImg, alt: "Group study session", category: "Activities" },
-  { src: celebratingImg, alt: "Annual day celebration", category: "Events" },
+  { src: classroomImg, alt: "Smart classroom setup", category: "Classrooms" },
 ];
 
 const categories = ["All", "Classrooms", "Teaching", "Activities", "Events"];
@@ -21,6 +32,7 @@ const categories = ["All", "Classrooms", "Teaching", "Activities", "Events"];
 const Gallery = () => {
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const [filter, setFilter] = useState("All");
+  useScrollAnimation();
 
   const filtered = filter === "All" ? images : images.filter((i) => i.category === filter);
 
@@ -35,7 +47,7 @@ const Gallery = () => {
 
       <section className="py-16 md:py-24">
         <div className="container">
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
+          <div className="flex flex-wrap justify-center gap-3 mb-10 gsap-fade-up">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -47,7 +59,7 @@ const Gallery = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 gsap-stagger">
             {filtered.map((img, i) => (
               <button
                 key={i}

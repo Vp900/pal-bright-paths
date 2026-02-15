@@ -26,7 +26,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container flex justify-between items-center">
           <div className="flex items-center gap-6">
             <a href="tel:+918080321805" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Phone className="w-3.5 h-3.5" /> +91 80803 21805</a>
-            <a href="mailto:support@palclassess.com" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Mail className="w-3.5 h-3.5" /> support@palclassess.com</a>
+            <a href="mailto:info@palclasses.com" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Mail className="w-3.5 h-3.5" /> info@palclasses.com</a>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Wadala East, Mumbai</span>
@@ -137,12 +137,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div>
               <h4 className="font-heading font-semibold text-lg mb-4">Our Courses</h4>
               <ul className="space-y-2 text-sm text-background/70">
-                <li>Primary (Class 1-5)</li>
-                <li>Middle School (Class 6-8)</li>
-                <li>Secondary (Class 9-10)</li>
-                <li>Senior Secondary (Class 11-12)</li>
-                <li>Olympiad Preparation</li>
-                <li>Board Exam Special</li>
+                <li>Pre-Primary (Nursery - Sr.KG)</li>
+                <li>Primary (Class 1-4)</li>
+                <li>Secondary (Class 5-10)</li>
+                <li>Special Batches (Class 8, 9, 10)</li>
               </ul>
             </div>
 
@@ -152,7 +150,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> 17, 2/4 Barkat Ali Nagar, Salt Pans Road, Wadala East, Mumbai – 400037, Maharashtra, India</li>
                 <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+918080321805" className="hover:text-accent transition-colors">+91 80803 21805</a></li>
                 <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+919768387999" className="hover:text-accent transition-colors">+91 97683 87999</a></li>
-                <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0" /> <a href="mailto:support@palclassess.com" className="hover:text-accent transition-colors">support@palclassess.com</a></li>
+                <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0" /> <a href="mailto:info@palclasses.com" className="hover:text-accent transition-colors">info@palclasses.com</a></li>
               </ul>
             </div>
           </div>
