@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Users, BookOpen, Award, Star, ChevronLeft, ChevronRight, GraduationCap, Target, Clock, UserCheck, Monitor, FileText, HelpCircle, HeartHandshake, Wifi, IndianRupee } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import heroImg from "@/assets/hero-classroom.jpg";
 
 const stats = [
@@ -56,6 +57,7 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
 
 const Index = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  useScrollAnimation();
 
   return (
     <>
@@ -75,7 +77,7 @@ const Index = () => {
               <span className="text-accent">Quality Education</span>
             </h1>
             <p className="text-primary-foreground/85 text-lg md:text-xl mb-8 leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
-              Expert coaching for classes 1-12 across CBSE, ICSE & State Board. Join 2000+ successful students who trust Pal Classes for academic excellence.
+              Expert coaching for Nursery to Class 10 across State Board. Join 2000+ successful students who trust Pal Classes for academic excellence.
             </p>
             <div className="flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
               <Link to="/admission">
@@ -92,11 +94,11 @@ const Index = () => {
       {/* Highlights */}
       <section className="py-16 md:py-24 bg-section-gradient">
         <div className="container">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 gsap-fade-up">
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">Why Parents Choose <span className="text-primary">Pal Classes</span></h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">We provide a nurturing environment where every student gets the attention they deserve to excel academically.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 gsap-stagger">
             {highlights.map((item) => (
               <div key={item.title} className="bg-card rounded-xl p-6 border hover-lift text-center">
                 <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -130,11 +132,11 @@ const Index = () => {
       {/* Facilities */}
       <section className="py-16 md:py-24">
         <div className="container">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 gsap-fade-up">
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">Our <span className="text-primary">Facilities</span></h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">We provide the best learning environment with modern amenities for our students.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 gsap-stagger">
             {[
               { icon: UserCheck, title: "Well Experienced Faculty", desc: "Qualified and experienced teachers dedicated to student success." },
               { icon: Monitor, title: "Smart Classroom", desc: "Interactive panel-based digital classrooms for better learning." },
@@ -158,13 +160,13 @@ const Index = () => {
       </section>
 
       {/* Courses Preview */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 bg-section-gradient">
         <div className="container">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 gsap-fade-up">
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">Our <span className="text-primary">Programs</span></h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Comprehensive coaching programs designed for students from Class 1 to 12 across all major boards.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Comprehensive coaching programs designed for students from Nursery to Class 10.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 gsap-stagger">
             {[
               { title: "Pre-Primary", subjects: "English, Hindi, Maths, Drawing, Rhymes", icon: "🧒", color: "bg-[hsl(340,60%,92%)]" },
               { title: "Primary (1-4)", subjects: "Maths, English, Hindi, Science, EVS", icon: "📚", color: "bg-[hsl(142,60%,92%)]" },
@@ -189,12 +191,12 @@ const Index = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 md:py-24 bg-section-gradient">
+      <section className="py-16 md:py-24">
         <div className="container">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 gsap-fade-up">
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">What Our <span className="text-primary">Students Say</span></h2>
           </div>
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl mx-auto gsap-scale-in">
             <div className="bg-card rounded-2xl p-8 border shadow-sm text-center relative">
               <div className="flex justify-center mb-4">
                 {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (

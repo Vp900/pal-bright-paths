@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, FileText, UserPlus, ClipboardList, CreditCard } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const steps = [
   { icon: FileText, title: "Fill Enquiry Form", desc: "Submit the online enquiry form or visit our center." },
@@ -10,13 +11,14 @@ const steps = [
 ];
 
 const fees = [
-  { level: "Primary (1-5)", monthly: "₹1,500", yearly: "₹15,000" },
-  { level: "Middle (6-8)", monthly: "₹2,000", yearly: "₹20,000" },
-  { level: "Secondary (9-10)", monthly: "₹3,000", yearly: "₹30,000" },
-  { level: "Senior Sec. (11-12)", monthly: "₹4,000", yearly: "₹40,000" },
+  { level: "Pre-Primary (Nursery-Sr.KG)", monthly: "₹1,000", yearly: "₹10,000" },
+  { level: "Primary (1-4)", monthly: "₹1,500", yearly: "₹15,000" },
+  { level: "Secondary (5-10)", monthly: "₹2,500", yearly: "₹25,000" },
+  { level: "Special Batch (8,9,10)", monthly: "₹3,000", yearly: "₹30,000" },
 ];
 
 const Admission = () => {
+  useScrollAnimation();
   const [formData, setFormData] = useState({ name: "", phone: "", class: "", message: "" });
   const [demoData, setDemoData] = useState({ name: "", phone: "", class: "", preferredDate: "" });
   const [submitted, setSubmitted] = useState(false);
