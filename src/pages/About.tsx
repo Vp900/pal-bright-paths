@@ -55,7 +55,7 @@ const About = () => {
                 <p className="text-muted-foreground text-lg leading-relaxed italic mb-6">
                   "When I started Pal Classes over a decade ago, I had a simple belief — every child deserves quality education regardless of their background. Today, seeing thousands of students achieve their dreams fills me with immense pride. Our commitment to academic excellence, combined with values-based education, sets us apart. I invite you to join the Pal Classes family and experience the difference that dedicated teaching can make."
                 </p>
-                <p className="font-heading font-semibold text-lg">— G.M. Pal</p>
+                <p className="font-heading font-semibold text-lg">Mr. Rajesh Pal</p>
                 <p className="text-muted-foreground text-sm">Founder & Director, Pal Classes</p>
               </div>
             </div>
