@@ -4,8 +4,19 @@ import { BookOpen, Clock, Users, CheckCircle } from "lucide-react";
 
 const courses = [
   {
+    level: "Pre-Primary",
+    classes: "Nursery, Jr.KG, Sr.KG",
+    icon: "🧒",
+    color: "bg-[hsl(340,60%,92%)] border-[hsl(340,60%,80%)]",
+    subjects: ["English", "Hindi", "Mathematics", "Drawing", "Rhymes & Activities"],
+    features: ["Play-based learning", "Activity & craft sessions", "Phonics & number recognition", "Motor skill development"],
+    duration: "Full Academic Year",
+    method: "Fun, interactive and activity-based learning",
+    batchSize: "15 students per batch",
+  },
+  {
     level: "Primary",
-    classes: "Class 1-5",
+    classes: "Class 1-4",
     icon: "📚",
     color: "bg-[hsl(142,60%,92%)] border-[hsl(142,60%,80%)]",
     subjects: ["Mathematics", "English", "Hindi", "Science", "EVS"],
@@ -15,36 +26,25 @@ const courses = [
     batchSize: "20 students per batch",
   },
   {
-    level: "Middle School",
-    classes: "Class 6-8",
-    icon: "🔬",
-    color: "bg-[hsl(200,70%,92%)] border-[hsl(200,70%,80%)]",
-    subjects: ["Mathematics", "Science", "English", "Hindi", "Social Science"],
-    features: ["Concept strengthening", "Olympiad preparation", "NTSE foundation", "Critical thinking development"],
-    duration: "Full Academic Year",
-    method: "Conceptual teaching with practical demonstrations",
-    batchSize: "25 students per batch",
-  },
-  {
     level: "Secondary",
-    classes: "Class 9-10",
+    classes: "Class 5-10",
     icon: "📐",
     color: "bg-[hsl(40,90%,90%)] border-[hsl(40,90%,78%)]",
-    subjects: ["Mathematics", "Science", "English", "Social Science"],
-    features: ["Board exam preparation", "Weekly tests & mock exams", "Previous year paper solving", "Special doubt sessions"],
+    subjects: ["Mathematics", "Science", "English", "Hindi", "Social Science"],
+    features: ["Board exam preparation", "Weekly tests & mock exams", "Concept strengthening", "Previous year paper solving", "Special doubt sessions"],
     duration: "Full Academic Year + Crash Course",
     method: "Board-focused teaching with intensive revision",
     batchSize: "25 students per batch",
   },
   {
-    level: "Senior Secondary – Science",
-    classes: "Class 11-12",
+    level: "Special Batches",
+    classes: "Class 8, 9 & 10",
     icon: "🎯",
     color: "bg-[hsl(280,60%,92%)] border-[hsl(280,60%,80%)]",
-    subjects: ["Physics", "Chemistry", "Biology", "Mathematics"],
-    features: ["Board + competitive exam prep", "JEE/NEET foundation building", "Lab practical guidance", "Career counseling sessions"],
+    subjects: ["Mathematics", "Science", "English", "Social Science"],
+    features: ["Intensive board exam prep", "Daily practice & revision", "Mock test series", "Personal performance tracking", "Extra lectures for weak students"],
     duration: "Full Academic Year + Summer Batch",
-    method: "Advanced problem-solving with numerical practice",
+    method: "Advanced problem-solving with focused revision and extra support",
     batchSize: "20 students per batch",
   },
 ];
@@ -54,7 +54,7 @@ const Courses = () => (
     <section className="bg-hero-gradient py-20">
       <div className="container text-center">
         <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">Our Courses</h1>
-        <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">Comprehensive programs for every grade, designed to build strong foundations and achieve top results.</p>
+        <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">Comprehensive programs from Nursery to Class 10, designed to build strong foundations and achieve top results.</p>
       </div>
     </section>
 

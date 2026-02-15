@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone, Mail, MapPin, GraduationCap, Facebook, Instagram, Youtube, MessageCircle } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Youtube, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logoImg from "@/assets/logo.jpeg";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -25,7 +26,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="container flex justify-between items-center">
           <div className="flex items-center gap-6">
             <a href="tel:+918080321805" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Phone className="w-3.5 h-3.5" /> +91 80803 21805</a>
-            <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" /> info@palclasses.com</span>
+            <a href="mailto:support@palclassess.com" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Mail className="w-3.5 h-3.5" /> support@palclassess.com</a>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Wadala East, Mumbai</span>
@@ -37,12 +38,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b shadow-sm">
         <div className="container flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-hero-gradient flex items-center justify-center">
-              <GraduationCap className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <img src={logoImg} alt="Pal Classes Logo" className="w-12 h-12 rounded-lg object-contain" />
             <div>
               <span className="font-heading font-bold text-xl text-primary">Pal Classes</span>
-              <span className="block text-[10px] text-muted-foreground leading-none -mt-0.5">Quality Education</span>
+              <span className="block text-[10px] text-muted-foreground leading-none -mt-0.5">Where Excellence is a Tradition</span>
             </div>
           </Link>
 
@@ -111,9 +110,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-accent flex items-center justify-center">
-                  <GraduationCap className="w-6 h-6 text-accent-foreground" />
-                </div>
+                <img src={logoImg} alt="Pal Classes Logo" className="w-12 h-12 rounded-lg object-contain" />
                 <span className="font-heading font-bold text-xl">Pal Classes</span>
               </div>
               <p className="text-background/70 text-sm leading-relaxed">
@@ -155,7 +152,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> 17, 2/4 Barkat Ali Nagar, Salt Pans Road, Wadala East, Mumbai – 400037, Maharashtra, India</li>
                 <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+918080321805" className="hover:text-accent transition-colors">+91 80803 21805</a></li>
                 <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+919768387999" className="hover:text-accent transition-colors">+91 97683 87999</a></li>
-                <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0" /> info@palclasses.com</li>
+                <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0" /> <a href="mailto:support@palclassess.com" className="hover:text-accent transition-colors">support@palclassess.com</a></li>
               </ul>
             </div>
           </div>
@@ -163,7 +160,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="border-t border-background/10">
           <div className="container py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-background/50">
             <span>© 2026 Pal Classes. All rights reserved.</span>
-            <span>Created & Designed by <a href="https://vikaspalprojects.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent/80 transition-colors font-medium">Eng. Vikas Pal</a></span>
           </div>
         </div>
       </footer>

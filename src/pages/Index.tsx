@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Users, BookOpen, Award, Star, ChevronLeft, ChevronRight, GraduationCap, Target, Clock, UserCheck } from "lucide-react";
+import { Users, BookOpen, Award, Star, ChevronLeft, ChevronRight, GraduationCap, Target, Clock, UserCheck, Monitor, FileText, HelpCircle, HeartHandshake, Wifi, IndianRupee } from "lucide-react";
 import heroImg from "@/assets/hero-classroom.jpg";
 
 const stats = [
-  { icon: Clock, value: 10, suffix: "+", label: "Years Experience" },
+  { icon: Clock, value: 15, suffix: "+", label: "Years Experience" },
   { icon: Users, value: 2000, suffix: "+", label: "Students Taught" },
-  { icon: Award, value: 95, suffix: "%", label: "Success Rate" },
+  { icon: Award, value: 100, suffix: "%", label: "Success Rate" },
   { icon: Star, value: 50, suffix: "+", label: "Expert Faculty" },
 ];
 
@@ -127,6 +127,36 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Facilities */}
+      <section className="py-16 md:py-24">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">Our <span className="text-primary">Facilities</span></h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">We provide the best learning environment with modern amenities for our students.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: UserCheck, title: "Well Experienced Faculty", desc: "Qualified and experienced teachers dedicated to student success." },
+              { icon: Monitor, title: "Smart Classroom", desc: "Interactive panel-based digital classrooms for better learning." },
+              { icon: FileText, title: "Study Material", desc: "Comprehensive study material and notes provided to all students." },
+              { icon: BookOpen, title: "Regular Test & Assessment", desc: "Weekly tests, mock exams and continuous assessment for progress tracking." },
+              { icon: HelpCircle, title: "Doubt Clearing Sessions", desc: "Dedicated sessions for clearing doubts and strengthening concepts." },
+              { icon: HeartHandshake, title: "Counselling & Guidance", desc: "Career counselling and academic guidance for students and parents." },
+              { icon: Wifi, title: "Online Support", desc: "Online doubt solving and digital study support for students." },
+              { icon: IndianRupee, title: "Economical Fees with Easy EMI", desc: "Affordable fee structure with convenient EMI payment options." },
+            ].map((item) => (
+              <div key={item.title} className="bg-card rounded-xl p-6 border hover-lift text-center">
+                <div className="w-14 h-14 rounded-xl bg-accent/15 flex items-center justify-center mx-auto mb-4">
+                  <item.icon className="w-7 h-7 text-accent" />
+                </div>
+                <h3 className="font-heading font-semibold text-base mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Courses Preview */}
       <section className="py-16 md:py-24">
         <div className="container">
@@ -136,10 +166,10 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { title: "Primary (1-5)", subjects: "Maths, English, Hindi, Science, EVS", icon: "📚", color: "bg-[hsl(142,60%,92%)]" },
-              { title: "Middle (6-8)", subjects: "Maths, Science, English, Hindi, SST", icon: "🔬", color: "bg-[hsl(200,70%,92%)]" },
-              { title: "Secondary (9-10)", subjects: "Maths, Science, English, SST", icon: "📐", color: "bg-[hsl(40,90%,90%)]" },
-              { title: "Senior Sec. (11-12)", subjects: "Physics, Chemistry, Biology, Maths", icon: "🎯", color: "bg-[hsl(280,60%,92%)]" },
+              { title: "Pre-Primary", subjects: "English, Hindi, Maths, Drawing, Rhymes", icon: "🧒", color: "bg-[hsl(340,60%,92%)]" },
+              { title: "Primary (1-4)", subjects: "Maths, English, Hindi, Science, EVS", icon: "📚", color: "bg-[hsl(142,60%,92%)]" },
+              { title: "Secondary (5-10)", subjects: "Maths, Science, English, Hindi, SST", icon: "📐", color: "bg-[hsl(40,90%,90%)]" },
+              { title: "Special (8,9,10)", subjects: "Maths, Science, English, SST", icon: "🎯", color: "bg-[hsl(280,60%,92%)]" },
             ].map((course) => (
               <div key={course.title} className="bg-card rounded-xl border overflow-hidden hover-lift group">
                 <div className={`${course.color} p-6 text-center`}>

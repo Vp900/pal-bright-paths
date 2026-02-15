@@ -2,18 +2,22 @@ import { Award, Trophy, Star, TrendingUp } from "lucide-react";
 import celebratingImg from "@/assets/students-celebrating.jpg";
 
 const toppers = [
-  { name: "Ananya Sharma", class: "Class 10 CBSE", score: "98.6%", year: "2024" },
-  { name: "Rohit Kumar", class: "Class 12 Science", score: "97.2%", year: "2024" },
-  { name: "Priyanka Singh", class: "Class 10 ICSE", score: "96.8%", year: "2024" },
-  { name: "Arjun Patel", class: "Class 12 Science", score: "96.4%", year: "2024" },
-  { name: "Meera Gupta", class: "Class 10 CBSE", score: "95.8%", year: "2023" },
-  { name: "Vikash Yadav", class: "Class 12 Science", score: "95.2%", year: "2023" },
+  { name: "Suhela Solkar", class: "SSC", score: "91%", year: "2025" },
+  { name: "Pooja Prajapati", class: "SSC", score: "90%", year: "2025" },
+  { name: "Almira Karjikar", class: "SSC", score: "87%", year: "2025" },
+  { name: "Prashant Sahani", class: "SSC", score: "86%", year: "2025" },
+  { name: "Fariz Sakharkar", class: "SSC", score: "82%", year: "2025" },
+  { name: "Fareen Karjikar", class: "SSC", score: "80%", year: "2025" },
+  { name: "Nirjala Poyrekar", class: "SSC", score: "77%", year: "2025" },
+  { name: "Simran Logde", class: "SSC", score: "76%", year: "2025" },
+  { name: "Farheen Shah", class: "SSC", score: "76%", year: "2025" },
+  { name: "Atif Shaikh", class: "SSC", score: "76%", year: "2025" },
 ];
 
 const achievements = [
   { icon: Trophy, title: "Best Coaching Institute Award", desc: "Recognized as the best coaching institute in the city for 3 consecutive years." },
   { icon: Star, title: "100% Board Results", desc: "All students cleared board exams with first division for the last 5 years." },
-  { icon: TrendingUp, title: "JEE/NEET Selections", desc: "50+ students selected in JEE Mains and NEET in the last 3 years." },
+  { icon: TrendingUp, title: "SSC Board Toppers", desc: "Multiple students scoring 90%+ in SSC board exams every year." },
   { icon: Award, title: "Olympiad Winners", desc: "15+ students won state and national level Olympiad medals." },
 ];
 
@@ -26,18 +30,18 @@ const Results = () => (
       </div>
     </section>
 
-    {/* Toppers */}
+    {/* SSC Toppers */}
     <section className="py-16 md:py-24">
       <div className="container">
-        <h2 className="font-heading text-3xl font-bold text-center mb-12">Our <span className="text-primary">Toppers</span></h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 className="font-heading text-3xl font-bold text-center mb-12">SSC <span className="text-primary">Toppers</span></h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {toppers.map((t, i) => (
             <div key={t.name} className="bg-card rounded-xl border p-6 hover-lift text-center relative overflow-hidden">
               {i < 3 && <div className="absolute top-3 right-3 bg-accent text-accent-foreground text-xs font-bold px-2 py-1 rounded-full">🏆 Top {i + 1}</div>}
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <span className="font-heading font-bold text-xl text-primary">{t.name.charAt(0)}</span>
               </div>
-              <h3 className="font-heading font-semibold text-lg">{t.name}</h3>
+              <h3 className="font-heading font-semibold text-base">{t.name}</h3>
               <p className="text-muted-foreground text-sm">{t.class}</p>
               <p className="text-3xl font-heading font-extrabold text-primary mt-2">{t.score}</p>
               <p className="text-muted-foreground text-xs mt-1">Year: {t.year}</p>
