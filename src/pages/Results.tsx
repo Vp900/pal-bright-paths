@@ -9,18 +9,21 @@ import topperFareen from "@/assets/topper-fareen.jpg";
 import topperNirjala from "@/assets/topper-nirjala.jpg";
 import topperSimran from "@/assets/topper-simran.jpg";
 import topperFarheen from "@/assets/topper-farheen.jpg";
+import topperAtif from "@/assets/topper-atif.jpg";
+import topperFariz from "@/assets/topper-fariz.jpg";
+
 
 const toppers = [
   { name: "Suhela Solkar", class: "SSC", score: "91%", year: "2025", image: topperSuhela },
   { name: "Pooja Prajapati", class: "SSC", score: "90%", year: "2025", image: topperPooja },
   { name: "Almira Karjikar", class: "SSC", score: "87%", year: "2025", image: topperAlmira },
   { name: "Prashant Sahani", class: "SSC", score: "86%", year: "2025", image: topperPrashant },
-  { name: "Fariz Sakharkar", class: "SSC", score: "82%", year: "2025", image: null },
+  { name: "Fariz Sakharkar", class: "SSC", score: "82%", year: "2025", image: topperFariz },
   { name: "Fareen Karjikar", class: "SSC", score: "80%", year: "2025", image: topperFareen },
   { name: "Nirjala Poyrekar", class: "SSC", score: "77%", year: "2025", image: topperNirjala },
   { name: "Simran Logde", class: "SSC", score: "76%", year: "2025", image: topperSimran },
   { name: "Farheen Shah", class: "SSC", score: "76%", year: "2025", image: topperFarheen },
-  { name: "Atif Shaikh", class: "SSC", score: "76%", year: "2025", image: null },
+  { name: "Atif Shaikh", class: "SSC", score: "76%", year: "2025", image: topperAtif },
 ];
 
 const achievements = [
