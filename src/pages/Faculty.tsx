@@ -1,55 +1,90 @@
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { UserCheck, Monitor, FileText, BookOpen, HelpCircle, HeartHandshake, Wifi, IndianRupee, CheckCircle } from "lucide-react";
+import { UserCheck, Monitor, FileText, BookOpen, HelpCircle, HeartHandshake, Wifi, IndianRupee, CheckCircle, Star, ArrowRight } from "lucide-react";
+import classroomImg from "@/assets/classroom-interior.jpg";
+import libraryImg from "@/assets/library.jpg";
+import scienceLabImg from "@/assets/science-lab.jpg";
+import mathClassImg from "@/assets/math-class.jpg";
 
 const facilities = [
   {
     icon: UserCheck,
     title: "Well Experienced Faculty",
-    desc: "Our teaching staff comprises highly qualified educators with 10–18 years of experience across all subjects. Each faculty member holds advanced degrees (M.Sc., M.A., B.Ed., NET) and undergoes regular training to stay updated with the latest CBSE & SSC board curricula. They employ student-centric teaching methods to ensure every child reaches their full potential.",
+    desc: "Our teaching staff comprises highly qualified educators with 10–18 years of experience across all subjects. Each faculty member holds advanced degrees (M.Sc., M.A., B.Ed., NET) and undergoes regular training to stay updated with the latest CBSE & SSC board curricula.",
     highlights: ["Qualified M.Sc. & B.Ed. teachers", "Average 12+ years experience", "Regular pedagogical training", "Individual attention to every student"],
+    color: "from-[hsl(220,80%,50%)] to-[hsl(220,90%,35%)]",
+    bgLight: "bg-[hsl(220,80%,96%)]",
+    image: classroomImg,
   },
   {
     icon: Monitor,
     title: "Smart Classroom",
-    desc: "Our classrooms are equipped with interactive digital panels, projectors, and audio-visual teaching aids. Smart classrooms make complex topics easy to understand through 3D models, animations, and video lessons. This technology-enhanced environment keeps students engaged and improves retention of difficult concepts in Science, Maths, and other subjects.",
+    desc: "Our classrooms are equipped with interactive digital panels, projectors, and audio-visual teaching aids. Smart classrooms make complex topics easy to understand through 3D models, animations, and video lessons.",
     highlights: ["Interactive digital panels", "3D models & animated lessons", "Audio-visual teaching aids", "Technology-enhanced learning"],
+    color: "from-[hsl(160,70%,40%)] to-[hsl(160,80%,30%)]",
+    bgLight: "bg-[hsl(160,50%,95%)]",
+    image: mathClassImg,
   },
   {
     icon: FileText,
     title: "Comprehensive Study Material",
-    desc: "We provide meticulously prepared study material, chapter-wise notes, formula sheets, and practice question banks for every subject. Our materials are designed by experienced educators and aligned with the latest board exam patterns. Students receive printed booklets, worksheets, and access to digital resources — ensuring they have everything needed to excel.",
-    highlights: ["Chapter-wise detailed notes", "Formula sheets & quick revision guides", "Practice question banks", "Aligned with latest board patterns"],
+    desc: "Meticulously prepared study material, chapter-wise notes, formula sheets, and practice question banks for every subject. Aligned with the latest board exam patterns for maximum results.",
+    highlights: ["Chapter-wise detailed notes", "Formula sheets & revision guides", "Practice question banks", "Aligned with board patterns"],
+    color: "from-[hsl(280,60%,50%)] to-[hsl(280,70%,35%)]",
+    bgLight: "bg-[hsl(280,40%,96%)]",
+    image: libraryImg,
   },
   {
     icon: BookOpen,
     title: "Regular Test & Assessment",
-    desc: "We conduct weekly unit tests, monthly assessments, and full-length mock board exams throughout the year. Each test is followed by detailed result analysis and parent-teacher discussions. This continuous evaluation system helps identify weak areas early, track progress, and build exam-ready confidence in students well before the final boards.",
-    highlights: ["Weekly unit tests", "Monthly comprehensive exams", "Full-length mock board papers", "Detailed performance analysis & reports"],
+    desc: "Weekly unit tests, monthly assessments, and full-length mock board exams throughout the year. Each test is followed by detailed result analysis and parent-teacher discussions.",
+    highlights: ["Weekly unit tests", "Monthly comprehensive exams", "Mock board papers", "Performance analysis & reports"],
+    color: "from-[hsl(40,95%,50%)] to-[hsl(30,95%,45%)]",
+    bgLight: "bg-[hsl(40,80%,95%)]",
+    image: scienceLabImg,
   },
   {
     icon: HelpCircle,
     title: "Doubt Clearing Sessions",
-    desc: "Dedicated doubt-clearing sessions are held after every chapter and before exams. Students can freely ask questions without hesitation in a supportive environment. Our teachers ensure that no student moves ahead with unresolved doubts. One-on-one sessions are also available for students who need extra help with difficult topics.",
-    highlights: ["After every chapter completion", "Pre-exam special sessions", "One-on-one support available", "Judgment-free, supportive environment"],
+    desc: "Dedicated doubt-clearing sessions after every chapter and before exams. Students can freely ask questions in a supportive environment. One-on-one sessions available for extra help.",
+    highlights: ["After every chapter completion", "Pre-exam special sessions", "One-on-one support available", "Supportive environment"],
+    color: "from-[hsl(350,70%,50%)] to-[hsl(350,80%,40%)]",
+    bgLight: "bg-[hsl(350,50%,96%)]",
+    image: classroomImg,
   },
   {
     icon: HeartHandshake,
     title: "Counselling & Guidance",
-    desc: "We offer comprehensive career counselling and academic guidance for students from Class 8 onwards. Regular parent-teacher meetings keep families informed about their child's progress. Our counsellors help students choose the right stream after SSC, manage exam stress, develop effective study habits, and set achievable academic goals.",
-    highlights: ["Career stream guidance after SSC", "Exam stress management", "Regular parent-teacher meetings", "Study habit & goal-setting workshops"],
+    desc: "Comprehensive career counselling and academic guidance from Class 8 onwards. Regular parent-teacher meetings, stress management, and study habit workshops to help students excel.",
+    highlights: ["Career stream guidance", "Exam stress management", "Parent-teacher meetings", "Goal-setting workshops"],
+    color: "from-[hsl(200,70%,50%)] to-[hsl(200,80%,35%)]",
+    bgLight: "bg-[hsl(200,50%,95%)]",
+    image: mathClassImg,
   },
   {
     icon: Wifi,
     title: "Online Support",
-    desc: "Students stay connected with teachers beyond classroom hours through our online support system. WhatsApp groups, video doubt-solving sessions, and digital assignments ensure learning never stops. During exam season, special online revision classes and live Q&A sessions are conducted to provide maximum support to every student.",
-    highlights: ["WhatsApp doubt-solving groups", "Video classes & live Q&A", "Digital assignments & worksheets", "24/7 exam-season support"],
+    desc: "Stay connected with teachers beyond classroom hours through WhatsApp groups, video doubt-solving sessions, and digital assignments. Special online revision classes during exam season.",
+    highlights: ["WhatsApp doubt-solving groups", "Video classes & live Q&A", "Digital assignments", "24/7 exam-season support"],
+    color: "from-[hsl(170,60%,45%)] to-[hsl(170,70%,30%)]",
+    bgLight: "bg-[hsl(170,40%,95%)]",
+    image: libraryImg,
   },
   {
     icon: IndianRupee,
     title: "Economical Fees with Easy EMI",
-    desc: "Quality education should be accessible to all. Our fee structure is designed to be highly affordable compared to other coaching institutes. We offer flexible EMI payment plans so that no student misses out on quality coaching due to financial constraints. Scholarships and fee concessions are available for meritorious and economically weaker students.",
-    highlights: ["Most affordable in the area", "Flexible monthly EMI plans", "Scholarships for merit students", "Fee concession for economically weaker students"],
+    desc: "Highly affordable fee structure with flexible EMI payment plans. Scholarships and fee concessions available for meritorious and economically weaker students. Quality education for all.",
+    highlights: ["Most affordable in the area", "Flexible monthly EMI plans", "Scholarships for merit students", "Fee concession available"],
+    color: "from-[hsl(130,60%,40%)] to-[hsl(130,70%,30%)]",
+    bgLight: "bg-[hsl(130,40%,95%)]",
+    image: scienceLabImg,
   },
+];
+
+const stats = [
+  { value: "8+", label: "Key Facilities" },
+  { value: "15+", label: "Years Experience" },
+  { value: "100%", label: "Success Rate" },
+  { value: "500+", label: "Happy Students" },
 ];
 
 const Faculty = () => {
@@ -57,43 +92,111 @@ const Faculty = () => {
 
   return (
     <>
-      <section className="bg-hero-gradient py-20">
-        <div className="container text-center">
-          <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">Our Facilities</h1>
-          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">
-            We provide a world-class learning environment with modern amenities to ensure every student achieves excellence.
+      {/* Hero */}
+      <section className="bg-hero-gradient py-20 md:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-white/20 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
+        </div>
+        <div className="container text-center relative z-10">
+          <span className="inline-block bg-white/20 text-white text-sm font-medium px-4 py-1.5 rounded-full mb-6 gsap-fade-up">
+            ✨ World-Class Learning Environment
+          </span>
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary-foreground mb-5 gsap-fade-up">
+            Our Facilities
+          </h1>
+          <p className="text-primary-foreground/80 text-lg md:text-xl max-w-3xl mx-auto gsap-fade-up">
+            Everything your child needs to excel — from smart classrooms and experienced faculty to affordable fees and 24/7 online support.
           </p>
         </div>
       </section>
 
-      <section className="py-16 md:py-24">
+      {/* Stats Bar */}
+      <section className="relative z-10 -mt-8">
         <div className="container">
-          <div className="space-y-12">
-            {facilities.map((item, index) => (
-              <div
-                key={item.title}
-                className={`gsap-fade-up flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} gap-8 items-center bg-card rounded-2xl border p-6 md:p-10 hover-lift`}
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-14 h-14 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
-                      <item.icon className="w-7 h-7 text-accent" />
+          <div className="bg-card rounded-2xl border shadow-xl p-6 md:p-8 gsap-fade-up">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+              {stats.map((stat) => (
+                <div key={stat.label} className="group">
+                  <p className="font-heading text-3xl md:text-4xl font-extrabold text-primary mb-1 group-hover:scale-110 transition-transform duration-300">
+                    {stat.value}
+                  </p>
+                  <p className="text-muted-foreground text-sm font-medium">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Facilities Detail - Alternating Cards */}
+      <section className="py-16 md:py-24">
+        <div className="container space-y-16 md:space-y-24">
+          {facilities.map((item, index) => (
+            <div
+              key={item.title}
+              className={`gsap-fade-up flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} gap-8 lg:gap-12 items-stretch`}
+            >
+              {/* Image Side */}
+              <div className="lg:w-5/12 relative group">
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.color} rounded-2xl transform ${index % 2 === 0 ? "rotate-2" : "-rotate-2"} scale-[1.02] opacity-80 group-hover:rotate-0 transition-transform duration-500`} />
+                <div className="relative rounded-2xl overflow-hidden aspect-[4/3] lg:aspect-auto lg:h-full">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${item.color} opacity-30`} />
+                  <div className="absolute bottom-4 left-4">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg">
+                      <item.icon className="w-8 h-8 text-primary" />
                     </div>
-                    <h2 className="font-heading text-2xl md:text-3xl font-bold">{item.title}</h2>
                   </div>
-                  <p className="text-muted-foreground leading-relaxed mb-6">{item.desc}</p>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {item.highlights.map((point) => (
-                      <li key={point} className="flex items-start gap-2 text-sm">
-                        <CheckCircle className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* Content Side */}
+              <div className="lg:w-7/12 flex flex-col justify-center">
+                <div className={`inline-flex items-center gap-2 ${item.bgLight} rounded-full px-4 py-1.5 w-fit mb-4`}>
+                  <Star className="w-3.5 h-3.5 text-accent fill-accent" />
+                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Feature {String(index + 1).padStart(2, "0")}</span>
+                </div>
+                <h2 className="font-heading text-2xl md:text-3xl lg:text-4xl font-bold mb-4">{item.title}</h2>
+                <p className="text-muted-foreground leading-relaxed text-base md:text-lg mb-6">{item.desc}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {item.highlights.map((point) => (
+                    <div key={point} className="flex items-start gap-3 bg-card border rounded-xl p-3 hover-lift">
+                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium">{point}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-16 md:py-20 bg-hero-gradient relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/20 rounded-full blur-3xl" />
+        </div>
+        <div className="container text-center relative z-10 gsap-fade-up">
+          <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+            Ready to Experience the Best?
+          </h2>
+          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto mb-8">
+            Join Pal Classes today and give your child the advantage of world-class facilities at affordable fees.
+          </p>
+          <a
+            href="/admission"
+            className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-semibold px-8 py-4 rounded-xl hover:brightness-110 transition-all duration-300 text-lg shadow-lg hover:shadow-xl hover:-translate-y-1"
+          >
+            Enroll Now <ArrowRight className="w-5 h-5" />
+          </a>
         </div>
       </section>
     </>
