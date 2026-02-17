@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useCmsContent } from "@/hooks/useCms";
@@ -7,37 +7,33 @@ import { Input } from "@/components/ui/input";
 import {
   LogOut, Save, Trash2, Upload, Plus, Loader2, Image as ImageIcon,
   FileText, Home, Info, BookOpen, Award, GalleryHorizontal, Phone,
-  GraduationCap, Settings, Check, X, Edit2
+  GraduationCap, Settings, Check, X, Edit2, ChevronDown, ChevronRight,
+  Eye, EyeOff, RefreshCw
 } from "lucide-react";
+import { cmsPages, type CmsSection, type CmsField, type CmsImageField } from "@/config/cmsConfig";
 import logoImg from "@/assets/logo.jpeg";
+import { toast } from "sonner";
 
-const PAGES = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "about", label: "About Us", icon: Info },
-  { id: "courses", label: "Courses", icon: BookOpen },
-  { id: "facilities", label: "Facilities", icon: Settings },
-  { id: "results", label: "Results", icon: Award },
-  { id: "gallery", label: "Gallery", icon: GalleryHorizontal },
-  { id: "admission", label: "Admission", icon: GraduationCap },
-  { id: "contact", label: "Contact", icon: Phone },
-];
+const ICON_MAP: Record<string, any> = {
+  Settings, Home, Info, BookOpen, Award, GalleryHorizontal, Phone, GraduationCap,
+};
 
 const AdminDashboard = () => {
   const { isAdmin, loading: authLoading, signOut, user } = useAuth();
   const navigate = useNavigate();
   const [activePage, setActivePage] = useState("home");
-  const { content, images, loading, upsertContent, upsertImage, deleteContent, deleteImage, uploadImage, fetchContent } = useCmsContent(activePage);
-
-  // New content form
-  const [newKey, setNewKey] = useState("");
-  const [newValue, setNewValue] = useState("");
-  const [newType, setNewType] = useState("text");
+  const cms = useCmsContent(activePage);
+  const globalCms = useCmsContent("global");
   const [saving, setSaving] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState("");
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadingKey, setUploadingKey] = useState("");
-  const [newImageKey, setNewImageKey] = useState("");
+  const [pendingImageUpload, setPendingImageUpload] = useState<{ key: string; page: string } | null>(null);
+
+  // Draft state for fields
+  const [drafts, setDrafts] = useState<Record<string, string>>({});
+
+  const activeCms = activePage === "global" ? globalCms : cms;
+  const pageConfig = cmsPages.find(p => p.id === activePage);
 
   useEffect(() => {
     if (!authLoading && !isAdmin) {
@@ -45,58 +41,271 @@ const AdminDashboard = () => {
     }
   }, [isAdmin, authLoading, navigate]);
 
-  const handleAddContent = async () => {
-    if (!newKey.trim() || !newValue.trim()) return;
-    setSaving(true);
-    await upsertContent(newKey.trim(), newValue.trim(), newType);
-    setNewKey("");
-    setNewValue("");
-    setSaving(false);
-  };
-
-  const handleSaveEdit = async (item: any) => {
-    setSaving(true);
-    await upsertContent(item.section_key, editValue, item.content_type, item.page);
-    setEditingId(null);
-    setSaving(false);
-  };
-
-  const handleDeleteContent = async (id: string) => {
-    if (confirm("Delete this content?")) {
-      await deleteContent(id);
+  useEffect(() => {
+    setDrafts({});
+    // Expand first section by default
+    if (pageConfig?.sections?.[0]) {
+      setExpandedSections({ [pageConfig.sections[0].id]: true });
     }
+  }, [activePage]);
+
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => ({ ...prev, [sectionId]: !prev[sectionId] }));
   };
 
-  const handleDeleteImage = async (id: string) => {
-    if (confirm("Delete this image?")) {
-      await deleteImage(id);
+  const getDraftOrValue = (key: string, fallback: string = "") => {
+    if (drafts[key] !== undefined) return drafts[key];
+    return activeCms.getContent(key, fallback);
+  };
+
+  const setDraft = (key: string, value: string) => {
+    setDrafts(prev => ({ ...prev, [key]: value }));
+  };
+
+  const saveField = async (key: string, type: string = "text") => {
+    if (drafts[key] === undefined) return;
+    setSaving(true);
+    await activeCms.upsertContent(key, drafts[key], type, activePage);
+    setDrafts(prev => { const n = { ...prev }; delete n[key]; return n; });
+    setSaving(false);
+    toast.success("Saved!");
+  };
+
+  const saveAllDrafts = async () => {
+    setSaving(true);
+    for (const [key, value] of Object.entries(drafts)) {
+      await activeCms.upsertContent(key, value, "text", activePage);
     }
+    setDrafts({});
+    setSaving(false);
+    toast.success("All changes saved!");
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !uploadingKey) return;
+    if (!file || !pendingImageUpload) return;
     setSaving(true);
-    const path = `${activePage}/${Date.now()}-${file.name}`;
-    const { url, error } = await uploadImage(file, path);
+    const path = `${pendingImageUpload.page}/${Date.now()}-${file.name}`;
+    const { url, error } = activeCms.uploadImage
+      ? await activeCms.uploadImage(file, path)
+      : { url: null, error: "No upload fn" };
     if (url) {
-      await upsertImage(uploadingKey, url, activePage);
+      await activeCms.upsertImage(pendingImageUpload.key, url, pendingImageUpload.page);
+      toast.success("Image uploaded!");
+    } else {
+      toast.error("Upload failed");
     }
-    setUploadingKey("");
+    setPendingImageUpload(null);
     setSaving(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const startImageUpload = (key: string) => {
-    setUploadingKey(key);
+    setPendingImageUpload({ key, page: activePage });
     fileInputRef.current?.click();
   };
 
-  const handleAddNewImage = () => {
-    if (!newImageKey.trim()) return;
-    setUploadingKey(newImageKey.trim());
-    setNewImageKey("");
-    fileInputRef.current?.click();
+  const handleDeleteImage = async (id: string) => {
+    if (confirm("Delete this image?")) {
+      await activeCms.deleteImage(id);
+      toast.success("Image deleted");
+    }
+  };
+
+  // List item management
+  const getListItemCount = (prefix: string): number => {
+    let count = 0;
+    for (let i = 0; i < 50; i++) {
+      const exists = activeCms.content.find(c => c.section_key.startsWith(`${prefix}_${i}_`));
+      if (!exists && drafts[`${prefix}_${i}_`] === undefined) {
+        // Also check drafts
+        const hasDraft = Object.keys(drafts).some(k => k.startsWith(`${prefix}_${i}_`));
+        if (!hasDraft) break;
+      }
+      count++;
+    }
+    return count;
+  };
+
+  const addListItem = async (section: CmsSection) => {
+    if (!section.listKey || !section.listItem) return;
+    const count = getListItemCount(section.listKey);
+    setSaving(true);
+    for (const field of section.listItem.fields) {
+      await activeCms.upsertContent(`${section.listKey}_${count}_${field.key}`, field.placeholder || "", "text", activePage);
+    }
+    setSaving(false);
+    toast.success("Item added!");
+  };
+
+  const deleteListItem = async (section: CmsSection, index: number) => {
+    if (!section.listKey || !confirm("Delete this item?")) return;
+    setSaving(true);
+    const prefix = `${section.listKey}_${index}_`;
+    const toDelete = activeCms.content.filter(c => c.section_key.startsWith(prefix));
+    for (const item of toDelete) {
+      await activeCms.deleteContent(item.id);
+    }
+    // Also delete images
+    const imgToDelete = activeCms.images.filter(i => i.section_key.startsWith(prefix));
+    for (const img of imgToDelete) {
+      await activeCms.deleteImage(img.id);
+    }
+    // Re-index remaining items
+    const totalCount = getListItemCount(section.listKey!);
+    // Simple approach: just refresh
+    await activeCms.fetchContent();
+    setSaving(false);
+    toast.success("Item deleted");
+  };
+
+  const renderField = (field: CmsField, keyPrefix: string = "") => {
+    const fullKey = keyPrefix ? `${keyPrefix}_${field.key}` : field.key;
+    const value = getDraftOrValue(fullKey, field.placeholder || "");
+    const isDirty = drafts[fullKey] !== undefined;
+
+    return (
+      <div key={fullKey} className="space-y-1.5">
+        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{field.label}</label>
+        <div className="flex gap-2">
+          {field.type === "textarea" ? (
+            <textarea
+              value={value}
+              onChange={(e) => setDraft(fullKey, e.target.value)}
+              placeholder={field.placeholder}
+              className="flex-1 px-3 py-2 rounded-lg border bg-background text-sm resize-none min-h-[80px] focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          ) : (
+            <Input
+              value={value}
+              onChange={(e) => setDraft(fullKey, e.target.value)}
+              placeholder={field.placeholder}
+              type={field.type === "number" ? "number" : "text"}
+              className="flex-1"
+            />
+          )}
+          {isDirty && (
+            <Button size="icon" onClick={() => saveField(fullKey)} disabled={saving} className="shrink-0">
+              <Check className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderImageField = (imgField: CmsImageField, keyPrefix: string = "") => {
+    const fullKey = keyPrefix ? `${keyPrefix}_${imgField.key}` : imgField.key;
+    const currentImg = activeCms.images.find(i => i.section_key === fullKey);
+
+    return (
+      <div key={fullKey} className="space-y-2">
+        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{imgField.label}</label>
+        <div className="border rounded-xl overflow-hidden bg-muted/30">
+          {currentImg ? (
+            <div className="relative group">
+              <img src={currentImg.image_url} alt={imgField.label} className="w-full h-40 object-cover" />
+              <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/50 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                <Button size="icon" variant="secondary" onClick={() => startImageUpload(fullKey)}>
+                  <Upload className="w-4 h-4" />
+                </Button>
+                <Button size="icon" variant="destructive" onClick={() => handleDeleteImage(currentImg.id)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => startImageUpload(fullKey)}
+              className="w-full h-32 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            >
+              <Upload className="w-6 h-6" />
+              <span className="text-xs">Upload {imgField.label}</span>
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSection = (section: CmsSection) => {
+    const isExpanded = expandedSections[section.id] ?? false;
+
+    return (
+      <div key={section.id} className="bg-card border rounded-xl overflow-hidden">
+        <button
+          onClick={() => toggleSection(section.id)}
+          className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <FileText className="w-4 h-4 text-primary" />
+            </div>
+            <h3 className="font-heading font-semibold text-sm">{section.label}</h3>
+            {section.listKey && (
+              <span className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full">
+                {getListItemCount(section.listKey)} items
+              </span>
+            )}
+          </div>
+          {isExpanded ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronRight className="w-4 h-4 text-muted-foreground" />}
+        </button>
+
+        {isExpanded && (
+          <div className="px-4 pb-4 space-y-4 border-t pt-4">
+            {/* Regular fields */}
+            {section.fields.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {section.fields.map(f => renderField(f))}
+              </div>
+            )}
+
+            {/* Section-level images */}
+            {section.images && section.images.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {section.images.map(img => renderImageField(img))}
+              </div>
+            )}
+
+            {/* List items */}
+            {section.listKey && section.listItem && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-sm font-medium text-muted-foreground">{section.listLabel}s</h4>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => addListItem(section)}
+                    disabled={saving || (section.maxItems ? getListItemCount(section.listKey!) >= section.maxItems : false)}
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Add {section.listLabel}
+                  </Button>
+                </div>
+
+                {Array.from({ length: getListItemCount(section.listKey) }).map((_, i) => (
+                  <div key={i} className="bg-muted/30 border rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-muted-foreground">#{i + 1}</span>
+                      <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => deleteListItem(section, i)}>
+                        <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {section.listItem!.fields.map(f => renderField(f, `${section.listKey}_${i}`))}
+                    </div>
+                    {section.listItem!.images && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {section.listItem!.images.map(img => renderImageField(img, `${section.listKey}_${i}`))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   if (authLoading) {
@@ -107,16 +316,11 @@ const AdminDashboard = () => {
     );
   }
 
+  const hasDirtyFields = Object.keys(drafts).length > 0;
+
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Hidden file input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileUpload}
-      />
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
 
       {/* Sidebar */}
       <aside className="w-64 bg-card border-r flex flex-col shrink-0 sticky top-0 h-screen">
@@ -128,18 +332,21 @@ const AdminDashboard = () => {
           </div>
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {PAGES.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setActivePage(p.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                activePage === p.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
-            >
-              <p.icon className="w-4 h-4" />
-              {p.label}
-            </button>
-          ))}
+          {cmsPages.map((p) => {
+            const Icon = ICON_MAP[p.icon] || FileText;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setActivePage(p.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  activePage === p.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {p.label}
+              </button>
+            );
+          })}
         </nav>
         <div className="p-3 border-t">
           <p className="text-xs text-muted-foreground mb-2 truncate">{user?.email}</p>
@@ -154,146 +361,29 @@ const AdminDashboard = () => {
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="font-heading text-2xl font-bold capitalize">{activePage} Page</h1>
-              <p className="text-muted-foreground text-sm">Manage content and images for this page</p>
+              <h1 className="font-heading text-2xl font-bold">{pageConfig?.label || activePage} Page</h1>
+              <p className="text-muted-foreground text-sm">Manage all sections, text, and images</p>
             </div>
-            <Button variant="outline" size="sm" onClick={fetchContent}>
-              Refresh
-            </Button>
+            <div className="flex gap-2">
+              {hasDirtyFields && (
+                <Button onClick={saveAllDrafts} disabled={saving}>
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save All ({Object.keys(drafts).length})
+                </Button>
+              )}
+              <Button variant="outline" size="sm" onClick={activeCms.fetchContent}>
+                <RefreshCw className="w-4 h-4 mr-1" /> Refresh
+              </Button>
+            </div>
           </div>
 
-          {loading ? (
+          {activeCms.loading ? (
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           ) : (
-            <div className="space-y-8">
-              {/* Text Content Section */}
-              <section>
-                <div className="flex items-center gap-2 mb-4">
-                  <FileText className="w-5 h-5 text-primary" />
-                  <h2 className="font-heading text-lg font-semibold">Text Content</h2>
-                </div>
-
-                {/* Existing content */}
-                <div className="space-y-3 mb-6">
-                  {content.length === 0 && (
-                    <p className="text-muted-foreground text-sm py-4 text-center bg-muted/50 rounded-lg">
-                      No content added yet. Add your first content below.
-                    </p>
-                  )}
-                  {content.map((item: any) => (
-                    <div key={item.id} className="bg-card border rounded-xl p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded">{item.section_key}</span>
-                            <span className="text-xs text-muted-foreground">{item.content_type}</span>
-                          </div>
-                          {editingId === item.id ? (
-                            <div className="flex gap-2">
-                              <textarea
-                                value={editValue}
-                                onChange={(e) => setEditValue(e.target.value)}
-                                className="flex-1 px-3 py-2 rounded-lg border bg-background text-sm resize-none min-h-[80px]"
-                              />
-                              <div className="flex flex-col gap-1">
-                                <Button size="icon" variant="ghost" onClick={() => handleSaveEdit(item)} disabled={saving}>
-                                  <Check className="w-4 h-4 text-primary" />
-                                </Button>
-                                <Button size="icon" variant="ghost" onClick={() => setEditingId(null)}>
-                                  <X className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          ) : (
-                            <p className="text-sm text-foreground whitespace-pre-wrap">{item.content_value}</p>
-                          )}
-                        </div>
-                        {editingId !== item.id && (
-                          <div className="flex gap-1">
-                            <Button size="icon" variant="ghost" onClick={() => { setEditingId(item.id); setEditValue(item.content_value); }}>
-                              <Edit2 className="w-4 h-4" />
-                            </Button>
-                            <Button size="icon" variant="ghost" onClick={() => handleDeleteContent(item.id)}>
-                              <Trash2 className="w-4 h-4 text-destructive" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Add new content */}
-                <div className="bg-muted/50 border border-dashed rounded-xl p-4">
-                  <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Plus className="w-4 h-4" /> Add New Content</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                    <Input placeholder="Section Key (e.g. hero_title)" value={newKey} onChange={(e) => setNewKey(e.target.value)} />
-                    <select value={newType} onChange={(e) => setNewType(e.target.value)} className="px-3 py-2 rounded-lg border bg-background text-sm">
-                      <option value="text">Text</option>
-                      <option value="html">HTML</option>
-                      <option value="json">JSON</option>
-                    </select>
-                    <Button onClick={handleAddContent} disabled={saving || !newKey.trim() || !newValue.trim()}>
-                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                      Save
-                    </Button>
-                  </div>
-                  <textarea
-                    placeholder="Content value..."
-                    value={newValue}
-                    onChange={(e) => setNewValue(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border bg-background text-sm resize-none min-h-[80px]"
-                  />
-                </div>
-              </section>
-
-              {/* Images Section */}
-              <section>
-                <div className="flex items-center gap-2 mb-4">
-                  <ImageIcon className="w-5 h-5 text-primary" />
-                  <h2 className="font-heading text-lg font-semibold">Images</h2>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  {images.length === 0 && (
-                    <p className="text-muted-foreground text-sm py-4 text-center bg-muted/50 rounded-lg col-span-full">
-                      No images added yet. Upload your first image below.
-                    </p>
-                  )}
-                  {images.map((img: any) => (
-                    <div key={img.id} className="bg-card border rounded-xl overflow-hidden">
-                      <div className="aspect-video relative group">
-                        <img src={img.image_url} alt={img.section_key} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/50 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                          <Button size="icon" variant="secondary" onClick={() => startImageUpload(img.section_key)}>
-                            <Upload className="w-4 h-4" />
-                          </Button>
-                          <Button size="icon" variant="destructive" onClick={() => handleDeleteImage(img.id)}>
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="p-3">
-                        <span className="bg-primary/10 text-primary text-xs font-medium px-2 py-0.5 rounded">{img.section_key}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Add new image */}
-                <div className="bg-muted/50 border border-dashed rounded-xl p-4">
-                  <h3 className="text-sm font-medium mb-3 flex items-center gap-2"><Plus className="w-4 h-4" /> Upload New Image</h3>
-                  <div className="flex gap-3">
-                    <Input placeholder="Image Key (e.g. hero_image)" value={newImageKey} onChange={(e) => setNewImageKey(e.target.value)} />
-                    <Button onClick={handleAddNewImage} disabled={!newImageKey.trim() || saving}>
-                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
-                      Upload
-                    </Button>
-                  </div>
-                </div>
-              </section>
+            <div className="space-y-4">
+              {pageConfig?.sections.map(section => renderSection(section))}
             </div>
           )}
         </div>
