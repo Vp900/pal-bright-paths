@@ -1,38 +1,55 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import heroImg from "@/assets/hero-classroom.jpg";
-import classroomImg from "@/assets/classroom-interior.jpg";
-import studentsImg from "@/assets/students-studying.jpg";
-import celebratingImg from "@/assets/students-celebrating.jpg";
-import scienceLabImg from "@/assets/science-lab.jpg";
-import sportsImg from "@/assets/sports-day.jpg";
-import prizeImg from "@/assets/prize-distribution.jpg";
-import mathImg from "@/assets/math-class.jpg";
-import libraryImg from "@/assets/library.jpg";
-import parentImg from "@/assets/parent-meeting.jpg";
+import { useCmsContent } from "@/hooks/useCms";
+import heroImgFallback from "@/assets/hero-classroom.jpg";
+import classroomImgFallback from "@/assets/classroom-interior.jpg";
+import studentsImgFallback from "@/assets/students-studying.jpg";
+import celebratingImgFallback from "@/assets/students-celebrating.jpg";
+import scienceLabImgFallback from "@/assets/science-lab.jpg";
+import sportsImgFallback from "@/assets/sports-day.jpg";
+import prizeImgFallback from "@/assets/prize-distribution.jpg";
+import mathImgFallback from "@/assets/math-class.jpg";
+import libraryImgFallback from "@/assets/library.jpg";
+import parentImgFallback from "@/assets/parent-meeting.jpg";
 
-const images = [
-  { src: heroImg, alt: "Classroom teaching session", category: "Teaching" },
-  { src: classroomImg, alt: "Modern classroom interior", category: "Classrooms" },
-  { src: studentsImg, alt: "Students studying together", category: "Activities" },
-  { src: celebratingImg, alt: "Students celebrating results", category: "Events" },
-  { src: scienceLabImg, alt: "Science lab experiments", category: "Teaching" },
-  { src: sportsImg, alt: "Annual sports day", category: "Events" },
-  { src: prizeImg, alt: "Prize distribution ceremony", category: "Events" },
-  { src: mathImg, alt: "Mathematics classroom session", category: "Teaching" },
-  { src: libraryImg, alt: "Library and reading area", category: "Classrooms" },
-  { src: parentImg, alt: "Parent-teacher meeting", category: "Activities" },
-  { src: heroImg, alt: "Interactive learning session", category: "Teaching" },
-  { src: classroomImg, alt: "Smart classroom setup", category: "Classrooms" },
+const defaultImages = [
+  { src: heroImgFallback, alt: "Classroom teaching session", category: "Teaching" },
+  { src: classroomImgFallback, alt: "Modern classroom interior", category: "Classrooms" },
+  { src: studentsImgFallback, alt: "Students studying together", category: "Activities" },
+  { src: celebratingImgFallback, alt: "Students celebrating results", category: "Events" },
+  { src: scienceLabImgFallback, alt: "Science lab experiments", category: "Teaching" },
+  { src: sportsImgFallback, alt: "Annual sports day", category: "Events" },
+  { src: prizeImgFallback, alt: "Prize distribution ceremony", category: "Events" },
+  { src: mathImgFallback, alt: "Mathematics classroom session", category: "Teaching" },
+  { src: libraryImgFallback, alt: "Library and reading area", category: "Classrooms" },
+  { src: parentImgFallback, alt: "Parent-teacher meeting", category: "Activities" },
 ];
 
-const categories = ["All", "Classrooms", "Teaching", "Activities", "Events"];
+const defaultCategories = ["All", "Classrooms", "Teaching", "Activities", "Events"];
 
 const Gallery = () => {
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const [filter, setFilter] = useState("All");
   useScrollAnimation();
+  const { getContent, getListItems, getListImages } = useCmsContent("gallery");
+
+  const heroTitle = getContent("hero_title", "Gallery");
+  const heroSubtitle = getContent("hero_subtitle", "A glimpse into life at Pal Classes — classrooms, events, and student activities.");
+  const categoriesStr = getContent("categories", "All,Classrooms,Teaching,Activities,Events");
+  const categories = categoriesStr.split(",").map(c => c.trim());
+
+  const cmsGalleryItems = getListItems("gallery_item", ["alt", "category"]);
+  const cmsGalleryImages = getListImages("gallery_item", "image");
+
+  const hasGalleryData = cmsGalleryItems.length > 0;
+  const images = hasGalleryData
+    ? cmsGalleryItems.map((item, i) => ({
+        src: cmsGalleryImages[i] || "",
+        alt: item.alt,
+        category: item.category,
+      })).filter(img => img.src)
+    : defaultImages;
 
   const filtered = filter === "All" ? images : images.filter((i) => i.category === filter);
 
@@ -40,8 +57,8 @@ const Gallery = () => {
     <>
       <section className="bg-hero-gradient py-20">
         <div className="container text-center">
-          <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">Gallery</h1>
-          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">A glimpse into life at Pal Classes — classrooms, events, and student activities.</p>
+          <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">{heroTitle}</h1>
+          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">{heroSubtitle}</p>
         </div>
       </section>
 
@@ -76,7 +93,6 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* Lightbox */}
       {selectedImg && (
         <div className="fixed inset-0 z-[100] bg-foreground/90 flex items-center justify-center p-4" onClick={() => setSelectedImg(null)}>
           <button className="absolute top-6 right-6 text-primary-foreground" onClick={() => setSelectedImg(null)}>

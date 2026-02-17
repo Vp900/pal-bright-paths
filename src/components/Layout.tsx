@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Youtube, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import logoImg from "@/assets/logo.jpeg";
+import { useCmsContent } from "@/hooks/useCms";
+import logoImgFallback from "@/assets/logo.jpeg";
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -18,6 +19,26 @@ const navLinks = [
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { getContent, getImage } = useCmsContent("global");
+
+  const siteName = getContent("site_name", "Pal Classes");
+  const siteTagline = getContent("site_tagline", "Where Excellence is a Tradition");
+  const topbarPhone = getContent("topbar_phone", "+91 80803 21805");
+  const topbarEmail = getContent("topbar_email", "info@palclasses.com");
+  const topbarLocation = getContent("topbar_location", "Wadala East, Mumbai");
+  const logoImg = getImage("site_logo", logoImgFallback);
+
+  const footerDescription = getContent("footer_description", "Shaping bright futures with quality education since 2014. We provide personalized coaching for classes 1-12 across CBSE, ICSE & State Board in Wadala, Mumbai.");
+  const footerCopyright = getContent("footer_copyright", "© 2026 Pal Classes. All rights reserved.");
+  const facebookUrl = getContent("facebook_url", "#");
+  const instagramUrl = getContent("instagram_url", "#");
+  const youtubeUrl = getContent("youtube_url", "#");
+  const whatsappNumber = getContent("whatsapp_number", "918080321805");
+
+  const address = getContent("address", "17, 2/4 Barkat Ali Nagar, Salt Pans Road, Wadala East, Mumbai – 400037, Maharashtra, India");
+  const phone1 = getContent("phone1", "+91 80803 21805");
+  const phone2 = getContent("phone2", "+91 97683 87999");
+  const email1 = getContent("email1", "info@palclasses.com");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -25,11 +46,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div className="bg-primary text-primary-foreground text-sm py-2 hidden md:block">
         <div className="container flex justify-between items-center">
           <div className="flex items-center gap-6">
-            <a href="tel:+918080321805" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Phone className="w-3.5 h-3.5" /> +91 80803 21805</a>
-            <a href="mailto:info@palclasses.com" className="flex items-center gap-1.5 hover:text-accent transition-colors"><Mail className="w-3.5 h-3.5" /> info@palclasses.com</a>
+            <a href={`tel:${topbarPhone.replace(/\s/g, '')}`} className="flex items-center gap-1.5 hover:text-accent transition-colors"><Phone className="w-3.5 h-3.5" /> {topbarPhone}</a>
+            <a href={`mailto:${topbarEmail}`} className="flex items-center gap-1.5 hover:text-accent transition-colors"><Mail className="w-3.5 h-3.5" /> {topbarEmail}</a>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> Wadala East, Mumbai</span>
+            <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {topbarLocation}</span>
           </div>
         </div>
       </div>
@@ -38,10 +59,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b shadow-sm">
         <div className="container flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoImg} alt="Pal Classes Logo" className="w-12 h-12 rounded-lg object-contain" />
+            <img src={logoImg} alt={`${siteName} Logo`} className="w-12 h-12 rounded-lg object-contain" />
             <div>
-              <span className="font-heading font-bold text-xl text-primary">Pal Classes</span>
-              <span className="block text-[10px] text-muted-foreground leading-none -mt-0.5">Where Excellence is a Tradition</span>
+              <span className="font-heading font-bold text-xl text-primary">{siteName}</span>
+              <span className="block text-[10px] text-muted-foreground leading-none -mt-0.5">{siteTagline}</span>
             </div>
           </Link>
 
@@ -67,15 +88,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             </Link>
           </div>
 
-          <button
-            className="lg:hidden p-2 rounded-md hover:bg-muted"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
+          <button className="lg:hidden p-2 rounded-md hover:bg-muted" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t bg-card animate-fade-in-up">
             <nav className="container py-4 flex flex-col gap-1">
@@ -101,7 +118,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       </header>
 
-      {/* Main Content */}
       <main className="flex-1">{children}</main>
 
       {/* Footer */}
@@ -110,16 +126,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <img src={logoImg} alt="Pal Classes Logo" className="w-12 h-12 rounded-lg object-contain" />
-                <span className="font-heading font-bold text-xl">Pal Classes</span>
+                <img src={logoImg} alt={`${siteName} Logo`} className="w-12 h-12 rounded-lg object-contain" />
+                <span className="font-heading font-bold text-xl">{siteName}</span>
               </div>
-              <p className="text-background/70 text-sm leading-relaxed">
-                Shaping bright futures with quality education since 2014. We provide personalized coaching for classes 1-12 across CBSE, ICSE & State Board in Wadala, Mumbai.
-              </p>
+              <p className="text-background/70 text-sm leading-relaxed">{footerDescription}</p>
               <div className="flex gap-3 mt-4">
-                <a href="#" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Facebook className="w-4 h-4" /></a>
-                <a href="#" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Instagram className="w-4 h-4" /></a>
-                <a href="#" className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Youtube className="w-4 h-4" /></a>
+                <a href={facebookUrl} className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Facebook className="w-4 h-4" /></a>
+                <a href={instagramUrl} className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Instagram className="w-4 h-4" /></a>
+                <a href={youtubeUrl} className="w-9 h-9 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary transition-colors"><Youtube className="w-4 h-4" /></a>
               </div>
             </div>
 
@@ -147,24 +161,24 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <div>
               <h4 className="font-heading font-semibold text-lg mb-4">Contact Info</h4>
               <ul className="space-y-3 text-sm text-background/70">
-                <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> 17, 2/4 Barkat Ali Nagar, Salt Pans Road, Wadala East, Mumbai – 400037, Maharashtra, India</li>
-                <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+918080321805" className="hover:text-accent transition-colors">+91 80803 21805</a></li>
-                <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href="tel:+919768387999" className="hover:text-accent transition-colors">+91 97683 87999</a></li>
-                <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0" /> <a href="mailto:info@palclasses.com" className="hover:text-accent transition-colors">info@palclasses.com</a></li>
+                <li className="flex items-start gap-2"><MapPin className="w-4 h-4 mt-0.5 shrink-0" /> {address}</li>
+                <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href={`tel:${phone1.replace(/\s/g, '')}`} className="hover:text-accent transition-colors">{phone1}</a></li>
+                <li className="flex items-center gap-2"><Phone className="w-4 h-4 shrink-0" /> <a href={`tel:${phone2.replace(/\s/g, '')}`} className="hover:text-accent transition-colors">{phone2}</a></li>
+                <li className="flex items-center gap-2"><Mail className="w-4 h-4 shrink-0" /> <a href={`mailto:${email1}`} className="hover:text-accent transition-colors">{email1}</a></li>
               </ul>
             </div>
           </div>
         </div>
         <div className="border-t border-background/10">
           <div className="container py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-background/50">
-            <span>© 2026 Pal Classes. All rights reserved.</span>
+            <span>{footerCopyright}</span>
           </div>
         </div>
       </footer>
 
       {/* WhatsApp Floating Button */}
       <a
-        href="https://wa.me/918080321805?text=Hello%20Pal%20Classes!%20I%20want%20to%20know%20more%20about%20your%20courses."
+        href={`https://wa.me/${whatsappNumber}?text=Hello%20${encodeURIComponent(siteName)}!%20I%20want%20to%20know%20more%20about%20your%20courses.`}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[hsl(142,70%,45%)] rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-110 animate-float"
