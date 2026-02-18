@@ -74,6 +74,8 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
   return <div ref={ref}>{count}{suffix}</div>;
 }
 
+import PopupBanner from "@/components/PopupBanner";
+
 const Index = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   useScrollAnimation();
@@ -127,6 +129,7 @@ const Index = () => {
 
   return (
     <>
+      <PopupBanner />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">

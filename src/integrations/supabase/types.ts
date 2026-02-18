@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      form_submissions: {
+        Row: {
+          class_level: string | null
+          created_at: string
+          email: string | null
+          form_type: string
+          id: string
+          message: string | null
+          name: string
+          phone: string | null
+          preferred_date: string | null
+        }
+        Insert: {
+          class_level?: string | null
+          created_at?: string
+          email?: string | null
+          form_type: string
+          id?: string
+          message?: string | null
+          name: string
+          phone?: string | null
+          preferred_date?: string | null
+        }
+        Update: {
+          class_level?: string | null
+          created_at?: string
+          email?: string | null
+          form_type?: string
+          id?: string
+          message?: string | null
+          name?: string
+          phone?: string | null
+          preferred_date?: string | null
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content_type: string

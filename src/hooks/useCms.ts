@@ -52,7 +52,6 @@ export const useCmsContent = (page?: string) => {
     return item?.image_url || fallback;
   };
 
-  // Get list items by prefix: e.g. "highlight_0_title", "highlight_1_title"
   const getListItems = (prefix: string, fields: string[]): Record<string, string>[] => {
     const items: Record<string, string>[] = [];
     for (let i = 0; i < 50; i++) {
@@ -76,7 +75,6 @@ export const useCmsContent = (page?: string) => {
       const img = images.find(im => im.section_key === key);
       if (img) imgs.push(img.image_url);
       else {
-        // Check if there's a content entry for this index
         const contentKey = content.find(c => c.section_key.startsWith(`${prefix}_${i}_`));
         if (!contentKey) break;
         imgs.push("");
@@ -85,12 +83,31 @@ export const useCmsContent = (page?: string) => {
     return imgs;
   };
 
-  const upsertContent = async (sectionKey: string, value: string, contentType: string = "text", targetPage?: string) => {
+  // Single upsert without refetch (for batch operations)
+  const upsertContentSingle = async (sectionKey: string, value: string, contentType: string = "text", targetPage?: string) => {
     const p = targetPage || page || "home";
     const { error } = await supabase.from("site_content").upsert(
       { page: p, section_key: sectionKey, content_type: contentType, content_value: value },
       { onConflict: "page,section_key" }
     );
+    return { error };
+  };
+
+  const upsertContent = async (sectionKey: string, value: string, contentType: string = "text", targetPage?: string) => {
+    const result = await upsertContentSingle(sectionKey, value, contentType, targetPage);
+    if (!result.error) await fetchContent();
+    return result;
+  };
+
+  // Batch upsert - saves all at once, fetches once at end
+  const batchUpsertContent = async (items: Array<{ key: string; value: string; type?: string; page?: string }>) => {
+    const rows = items.map(item => ({
+      page: item.page || page || "home",
+      section_key: item.key,
+      content_type: item.type || "text",
+      content_value: item.value,
+    }));
+    const { error } = await supabase.from("site_content").upsert(rows, { onConflict: "page,section_key" });
     if (!error) await fetchContent();
     return { error };
   };
@@ -136,13 +153,12 @@ export const useCmsContent = (page?: string) => {
   return {
     content, images, loading,
     getContent, getImage, getListItems, getListImages,
-    upsertContent, upsertImage,
+    upsertContent, upsertContentSingle, batchUpsertContent, upsertImage,
     deleteContent, deleteImage, deleteByKey,
     uploadImage, fetchContent,
   };
 };
 
-// Hook to fetch all content (no page filter) for global + specific page
 export const useCmsAll = () => {
   return useCmsContent(undefined);
 };
