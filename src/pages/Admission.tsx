@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, FileText, UserPlus, ClipboardList, CreditCard } from "lucide-react";
+import { CheckCircle, FileText, UserPlus, ClipboardList, CreditCard, Loader2 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useCmsContent } from "@/hooks/useCms";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const defaultSteps = [
   { icon: FileText, title: "Fill Enquiry Form", desc: "Submit the online enquiry form or visit our center." },
@@ -27,6 +29,8 @@ const Admission = () => {
   const [demoData, setDemoData] = useState({ name: "", phone: "", class: "", preferredDate: "" });
   const [submitted, setSubmitted] = useState(false);
   const [demoSubmitted, setDemoSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [demoSubmitting, setDemoSubmitting] = useState(false);
 
   const heroTitle = getContent("hero_title", "Admission & Enquiry");
   const heroSubtitle = getContent("hero_subtitle", "Join Pal Classes today. Fill the form below or book a free demo class to experience our teaching.");
@@ -40,21 +44,62 @@ const Admission = () => {
   const cmsFees = getListItems("fee", ["level", "monthly", "yearly"]);
   const fees = cmsFees.length > 0 ? cmsFees : defaultFees;
 
-  const handleEnquiry = (e: React.FormEvent) => { e.preventDefault(); setSubmitted(true); };
-  const handleDemo = (e: React.FormEvent) => { e.preventDefault(); setDemoSubmitted(true); };
+  const handleEnquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-form-email", {
+        body: {
+          form_type: "enquiry",
+          name: formData.name,
+          phone: formData.phone,
+          class_level: formData.class,
+          message: formData.message,
+        },
+      });
+      if (error) throw error;
+      setSubmitted(true);
+      toast.success("Enquiry submitted successfully!");
+    } catch (err) {
+      toast.error("Failed to submit. Please try again.");
+    }
+    setSubmitting(false);
+  };
+
+  const handleDemo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setDemoSubmitting(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-form-email", {
+        body: {
+          form_type: "demo",
+          name: demoData.name,
+          phone: demoData.phone,
+          class_level: demoData.class,
+          preferred_date: demoData.preferredDate,
+        },
+      });
+      if (error) throw error;
+      setDemoSubmitted(true);
+      toast.success("Demo class booked successfully!");
+    } catch (err) {
+      toast.error("Failed to submit. Please try again.");
+    }
+    setDemoSubmitting(false);
+  };
 
   return (
     <>
       <section className="bg-hero-gradient py-20">
         <div className="container text-center">
-          <h1 className="font-heading text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">{heroTitle}</h1>
-          <p className="text-primary-foreground/80 text-lg max-w-2xl mx-auto">{heroSubtitle}</p>
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4">{heroTitle}</h1>
+          <p className="text-primary-foreground/80 text-base sm:text-lg max-w-2xl mx-auto">{heroSubtitle}</p>
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="container">
-          <h2 className="font-heading text-3xl font-bold text-center mb-12" dangerouslySetInnerHTML={{ __html: processTitle.replace(/(Process)/, '<span class="text-primary">$1</span>') }} />
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12" dangerouslySetInnerHTML={{ __html: processTitle.replace(/(Process)/, '<span class="text-primary">$1</span>') }} />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {steps.map((step: any, i: number) => {
               const Icon = stepIcons[i % stepIcons.length];
@@ -73,11 +118,11 @@ const Admission = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-section-gradient">
+      <section className="py-12 sm:py-16 bg-section-gradient">
         <div className="container">
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="bg-card rounded-2xl border p-6 md:p-8">
-              <h3 className="font-heading text-xl font-bold mb-6">Enquiry Form</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
+            <div className="bg-card rounded-2xl border p-5 sm:p-6 md:p-8">
+              <h3 className="font-heading text-lg sm:text-xl font-bold mb-6">Enquiry Form</h3>
               {submitted ? (
                 <div className="text-center py-8">
                   <CheckCircle className="w-12 h-12 text-primary mx-auto mb-4" />
@@ -93,13 +138,16 @@ const Admission = () => {
                     {Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>Class {i + 1}</option>)}
                   </select>
                   <textarea placeholder="Your Message (Optional)" value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="w-full px-4 py-3 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring h-24 resize-none" />
-                  <Button type="submit" className="w-full" size="lg">Submit Enquiry</Button>
+                  <Button type="submit" className="w-full" size="lg" disabled={submitting}>
+                    {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    Submit Enquiry
+                  </Button>
                 </form>
               )}
             </div>
 
-            <div className="bg-card rounded-2xl border p-6 md:p-8">
-              <h3 className="font-heading text-xl font-bold mb-6">Book Free Demo Class</h3>
+            <div className="bg-card rounded-2xl border p-5 sm:p-6 md:p-8">
+              <h3 className="font-heading text-lg sm:text-xl font-bold mb-6">Book Free Demo Class</h3>
               {demoSubmitted ? (
                 <div className="text-center py-8">
                   <CheckCircle className="w-12 h-12 text-primary mx-auto mb-4" />
@@ -115,7 +163,10 @@ const Admission = () => {
                     {Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>Class {i + 1}</option>)}
                   </select>
                   <input type="date" required value={demoData.preferredDate} onChange={(e) => setDemoData({ ...demoData, preferredDate: e.target.value })} className="w-full px-4 py-3 rounded-lg border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-                  <Button type="submit" variant="hero" className="w-full" size="lg">Book Demo Class</Button>
+                  <Button type="submit" variant="hero" className="w-full" size="lg" disabled={demoSubmitting}>
+                    {demoSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    Book Demo Class
+                  </Button>
                 </form>
               )}
             </div>
@@ -123,23 +174,23 @@ const Admission = () => {
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="container">
-          <h2 className="font-heading text-3xl font-bold text-center mb-12" dangerouslySetInnerHTML={{ __html: feesTitle.replace(/(Structure)/, '<span class="text-primary">$1</span>') }} />
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12" dangerouslySetInnerHTML={{ __html: feesTitle.replace(/(Structure)/, '<span class="text-primary">$1</span>') }} />
           <div className="max-w-3xl mx-auto">
-            <div className="bg-card rounded-2xl border overflow-hidden">
-              <div className="grid grid-cols-3 bg-primary text-primary-foreground p-4 font-heading font-semibold text-sm">
+            <div className="bg-card rounded-2xl border overflow-hidden overflow-x-auto">
+              <div className="grid grid-cols-3 bg-primary text-primary-foreground p-3 sm:p-4 font-heading font-semibold text-xs sm:text-sm min-w-[320px]">
                 <span>Level</span><span className="text-center">Monthly</span><span className="text-center">Yearly</span>
               </div>
               {fees.map((f: any, i: number) => (
-                <div key={i} className={`grid grid-cols-3 p-4 text-sm ${i % 2 === 0 ? "bg-muted/50" : ""}`}>
+                <div key={i} className={`grid grid-cols-3 p-3 sm:p-4 text-xs sm:text-sm min-w-[320px] ${i % 2 === 0 ? "bg-muted/50" : ""}`}>
                   <span className="font-medium">{f.level}</span>
                   <span className="text-center text-muted-foreground">{f.monthly}</span>
                   <span className="text-center font-semibold text-primary">{f.yearly}</span>
                 </div>
               ))}
             </div>
-            <p className="text-center text-muted-foreground text-sm mt-4">{feesNote}</p>
+            <p className="text-center text-muted-foreground text-xs sm:text-sm mt-4">{feesNote}</p>
           </div>
         </div>
       </section>
