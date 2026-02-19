@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   LogOut, Save, Trash2, Upload, Plus, Loader2,
   FileText, Home, Info, BookOpen, Award, GalleryHorizontal, Phone,
-  GraduationCap, Settings, Check, ChevronDown, ChevronRight, RefreshCw, Menu, X
+  GraduationCap, Settings, Check, ChevronDown, ChevronRight, RefreshCw, Menu, X, User
 } from "lucide-react";
 import { cmsPages, type CmsSection, type CmsField, type CmsImageField } from "@/config/cmsConfig";
 import logoImg from "@/assets/logo.jpeg";
@@ -35,6 +35,9 @@ const AdminDashboard = () => {
   const [contacts, setContacts] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
 
+  // Profile State
+  const [profileData, setProfileData] = useState({ email: "", password: "", confirmPassword: "" });
+
   const activeCms = activePage === "global" ? globalCms : cms;
   const pageConfig = cmsPages.find(p => p.id === activePage);
   const isCmsPage = cmsPages.some(p => p.id === activePage);
@@ -44,6 +47,12 @@ const AdminDashboard = () => {
       navigate("/admin");
     }
   }, [isAdmin, authLoading, navigate]);
+
+  useEffect(() => {
+    if (user?.email) {
+      setProfileData(prev => ({ ...prev, email: user.email }));
+    }
+  }, [user]);
 
   useEffect(() => {
     setDrafts({});
@@ -80,6 +89,37 @@ const AdminDashboard = () => {
       toast.error("Failed to load messages");
     }
     setDataLoading(false);
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (profileData.password && profileData.password !== profileData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/update-profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({
+          email: profileData.email,
+          password: profileData.password || undefined
+        }),
+      });
+      if (res.ok) {
+        toast.success("Profile updated successfully");
+        setProfileData(prev => ({ ...prev, password: "", confirmPassword: "" }));
+      } else {
+        throw new Error("Failed to update");
+      }
+    } catch (err) {
+      toast.error("Failed to update profile");
+    }
+    setSaving(false);
   };
 
   const toggleSection = (sectionId: string) => {
@@ -236,6 +276,58 @@ const AdminDashboard = () => {
           {contacts.length === 0 && <p>No messages found.</p>}
         </div>
       )}
+    </div>
+  );
+
+  const renderProfile = () => (
+    <div className="max-w-xl mx-auto space-y-6">
+      <h2 className="text-xl font-bold font-heading">My Profile</h2>
+      <div className="bg-card p-6 rounded-xl border space-y-4">
+        <form onSubmit={handleUpdateProfile} className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Email Address</label>
+            <Input
+              value={profileData.email}
+              onChange={e => setProfileData({ ...profileData, email: e.target.value })}
+              required
+            />
+          </div>
+
+          <div className="pt-4 border-t">
+            <h3 className="text-sm font-semibold mb-3">Change Password</h3>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-muted-foreground">Current Password</label>
+                <Input value="********" disabled className="bg-muted" />
+                <p className="text-[10px] text-muted-foreground">Security: Current password is hidden.</p>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">New Password</label>
+                <Input
+                  type="password"
+                  placeholder="Leave blank to keep current"
+                  value={profileData.password}
+                  onChange={e => setProfileData({ ...profileData, password: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Confirm New Password</label>
+                <Input
+                  type="password"
+                  placeholder="Confirm new password"
+                  value={profileData.confirmPassword}
+                  onChange={e => setProfileData({ ...profileData, confirmPassword: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+
+          <Button type="submit" disabled={saving} className="w-full">
+            {saving ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2 h-4 w-4" />}
+            Update Profile
+          </Button>
+        </form>
+      </div>
     </div>
   );
 
@@ -430,6 +522,10 @@ const AdminDashboard = () => {
             <Phone className="w-4 h-4" /> Messages
           </button>
 
+          <button onClick={() => setActivePage("profile")} className={`w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activePage === "profile" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
+            <User className="w-4 h-4" /> My Profile
+          </button>
+
           <div className="mt-4 mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">Content</div>
           {cmsPages.map((p) => {
             const Icon = ICON_MAP[p.icon] || FileText;
@@ -462,7 +558,7 @@ const AdminDashboard = () => {
             <Menu className="w-5 h-5" />
           </button>
           <h1 className="font-heading text-sm font-bold truncate">
-            {activePage === "enquiries" ? "Enquiries" : activePage === "contacts" ? "Messages" : (pageConfig?.label || activePage)}
+            {activePage === "enquiries" ? "Enquiries" : activePage === "contacts" ? "Messages" : activePage === "profile" ? "My Profile" : (pageConfig?.label || activePage)}
           </h1>
           {isCmsPage && hasDirtyFields && (
             <Button size="sm" onClick={saveAllDrafts} disabled={saving} className="ml-auto text-xs">
@@ -475,6 +571,7 @@ const AdminDashboard = () => {
         <div className="p-3 sm:p-4 lg:p-6 max-w-5xl mx-auto">
           {activePage === "enquiries" && renderEnquiries()}
           {activePage === "contacts" && renderContacts()}
+          {activePage === "profile" && renderProfile()}
 
           {isCmsPage && (
             <>
