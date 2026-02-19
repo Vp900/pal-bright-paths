@@ -8,15 +8,18 @@ const router = express.Router();
 // Login Route
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    console.log(`Login attempt for: ${email}`); // Debug log
 
     try {
         const user = await User.findOne({ email });
         if (!user) {
+            console.log('User not found');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
+            console.log('Password mismatch');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
