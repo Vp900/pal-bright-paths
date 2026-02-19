@@ -1,27 +1,15 @@
 import express from 'express';
 import { Contact } from '../models/Contact';
-import { auth } from '../middleware/auth';
+import { auth, AuthRequest } from '../middleware/auth';
+import { sendEmail, generateAdminEmailTemplate } from '../services/email';
 
 const router = express.Router();
 
-// Submit Contact Message
+// Submit Contact Form
 router.post('/submit', async (req, res) => {
-    const { name, email, subject, message } = req.body;
-
-    try {
-        const newContact = new Contact({
-            name,
-            email,
-            subject,
-            message,
-        });
-
-        const contact = await newContact.save();
-        res.json(contact);
-    } catch (err: any) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+    console.error(err.message);
+    res.status(500).send('Server Error');
+}
 });
 
 // List Contact Messages (Protected)

@@ -1,30 +1,20 @@
 import express from 'express';
 import { Enquiry } from '../models/Enquiry';
-import { auth } from '../middleware/auth';
+import { auth, AuthRequest } from '../middleware/auth';
+import { sendEmail, generateAdminEmailTemplate } from '../services/email';
 
 const router = express.Router();
 
 // Submit Enquiry
 router.post('/submit', async (req, res) => {
-    const { name, email, phone, message, class: className, preferredDate, type } = req.body;
+});
 
-    try {
-        const newEnquiry = new Enquiry({
-            name,
-            email,
-            phone,
-            message,
-            class: className,
-            preferredDate,
-            type,
-        });
-
-        const enquiry = await newEnquiry.save();
-        res.json(enquiry);
+const enquiry = await newEnquiry.save();
+res.json(enquiry);
     } catch (err: any) {
-        console.error(err.message);
-        res.status(500).send('Server Error');
-    }
+    console.error(err.message);
+    res.status(500).send('Server Error');
+}
 });
 
 // List Enquiries (Protected)
