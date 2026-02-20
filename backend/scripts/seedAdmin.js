@@ -1,13 +1,13 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
-import { User } from '../models/User';
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const dotenv = require('dotenv');
+const { User } = require('../models/User');
 
 dotenv.config();
 
 const seedAdmin = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI as string);
+        await mongoose.connect(process.env.MONGO_URI);
         console.log('Connected to MongoDB...');
 
         const email = 'vikaspal90042@gmail.com';
@@ -17,7 +17,6 @@ const seedAdmin = async () => {
 
         if (admin) {
             console.log('Admin user already exists');
-            // Optional: Update password if it already exists to ensure it matches
             const salt = await bcrypt.genSalt(10);
             admin.password = await bcrypt.hash(password, salt);
             await admin.save();
@@ -44,3 +43,4 @@ const seedAdmin = async () => {
 };
 
 seedAdmin();
+

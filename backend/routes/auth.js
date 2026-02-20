@@ -1,7 +1,8 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { User } from '../models/User';
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { User } = require('../models/User');
+const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -32,23 +33,21 @@ router.post('/login', async (req, res) => {
 
         jwt.sign(
             payload,
-            process.env.JWT_SECRET as string,
+            process.env.JWT_SECRET,
             { expiresIn: '1h' },
             (err, token) => {
                 if (err) throw err;
                 res.json({ token });
             }
         );
-    } catch (err: any) {
+    } catch (err) {
         console.error(err.message);
         res.status(500).send('Server error');
     }
 });
 
 // Update Profile
-import { auth, AuthRequest } from '../middleware/auth';
-
-router.put('/update-profile', auth, async (req: AuthRequest, res) => {
+router.put('/update-profile', auth, async (req, res) => {
     const { email, password } = req.body;
     const userId = req.user.user.id;
 
@@ -66,21 +65,22 @@ router.put('/update-profile', auth, async (req: AuthRequest, res) => {
 
         await user.save();
         res.json({ message: 'Profile updated successfully' });
-    } catch (err: any) {
+    } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
 // Get Current User
-router.get('/me', auth, async (req: AuthRequest, res) => {
+router.get('/me', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.user.id).select('-password');
         res.json(user);
-    } catch (err: any) {
+    } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
 
-export default router;
+module.exports = router;
+

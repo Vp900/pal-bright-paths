@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const enquirySchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -11,4 +11,6 @@ const enquirySchema = new mongoose.Schema({
     date: { type: Date, default: Date.now },
 });
 
-export const Enquiry = mongoose.model('Enquiry', enquirySchema);
+const Enquiry = mongoose.model('Enquiry', enquirySchema);
+module.exports = { Enquiry };
+

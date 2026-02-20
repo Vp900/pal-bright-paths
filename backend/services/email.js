@@ -1,5 +1,5 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const sendEmail = async (to: string, subject: string, html: string) => {
+const sendEmail = async (to, subject, html) => {
     try {
         const info = await transporter.sendMail({
             from: process.env.EMAIL_USER, // sender address
@@ -28,7 +28,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     }
 };
 
-export const generateAdminEmailTemplate = (title: string, data: Record<string, string>) => {
+const generateAdminEmailTemplate = (title, data) => {
     const rows = Object.entries(data).map(([key, value]) => `
         <tr>
             <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; width: 30%;">${key}</td>
@@ -56,3 +56,6 @@ export const generateAdminEmailTemplate = (title: string, data: Record<string, s
         </div>
     `;
 };
+
+module.exports = { sendEmail, generateAdminEmailTemplate };
+
