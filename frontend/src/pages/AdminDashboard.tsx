@@ -489,124 +489,194 @@ const AdminDashboard = () => {
   const hasDirtyFields = Object.keys(drafts).length > 0;
 
   return (
-    <div className="min-h-screen bg-background flex relative">
+    <div className="min-h-screen bg-[#f8fafc] flex relative font-sans text-slate-900">
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
 
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-foreground/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
       <aside className={`
-        fixed lg:sticky top-0 left-0 h-screen z-50 w-64 bg-card border-r flex flex-col shrink-0
-        transition-transform duration-200
+        fixed lg:sticky top-0 left-0 h-screen z-50 w-72 bg-white border-r border-slate-200 flex flex-col shrink-0
+        transition-all duration-300 shadow-xl lg:shadow-none
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-3 sm:p-4 border-b flex items-center gap-3">
-          <img src={logoImg} alt="Logo" className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg object-contain" />
-          <div className="min-w-0">
-            <p className="font-heading font-bold text-sm truncate">Pal Classes</p>
-            <p className="text-[10px] text-muted-foreground">Admin Dashboard</p>
+        <div className="p-6 border-b border-slate-100 flex items-center gap-4 bg-slate-50/50">
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/20 blur-lg rounded-xl" />
+            <img src={logoImg} alt="Logo" className="w-10 h-10 rounded-xl object-contain bg-white shadow-sm border border-slate-100 p-1 relative z-10" />
           </div>
-          <button className="lg:hidden ml-auto p-1" onClick={() => setSidebarOpen(false)}>
+          <div className="min-w-0">
+            <p className="font-bold text-slate-900 leading-none mb-1">Pal Classes</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Administrator</p>
+          </div>
+          <button className="lg:hidden ml-auto p-2 text-slate-400 hover:text-slate-600 transition-colors" onClick={() => setSidebarOpen(false)}>
             <X className="w-5 h-5" />
           </button>
         </div>
-        <nav className="flex-1 p-2 sm:p-3 space-y-1 overflow-y-auto">
-          <div className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">Data</div>
-          <button onClick={() => setActivePage("enquiries")} className={`w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activePage === "enquiries" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
-            <FileText className="w-4 h-4" /> Enquiries
-          </button>
-          <button onClick={() => setActivePage("contacts")} className={`w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activePage === "contacts" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
-            <Phone className="w-4 h-4" /> Messages
-          </button>
 
-          <button onClick={() => setActivePage("profile")} className={`w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activePage === "profile" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}>
-            <User className="w-4 h-4" /> My Profile
-          </button>
-
-          <div className="mt-4 mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">Content</div>
-          {cmsPages.map((p) => {
-            const Icon = ICON_MAP[p.icon] || FileText;
-            return (
+        <nav className="flex-1 p-4 space-y-8 overflow-y-auto custom-scrollbar">
+          {/* 1. Global Section */}
+          <div>
+            <div className="mb-3 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Configuration</div>
+            {cmsPages.filter(p => p.id === "global").map((p) => (
               <button
                 key={p.id}
                 onClick={() => setActivePage(p.id)}
-                className={`w-full flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${activePage === p.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === p.id 
+                  ? "bg-primary text-white shadow-lg shadow-primary/25" 
+                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span className="truncate">{p.label}</span>
+                <Settings className={`w-4 h-4 ${activePage === p.id ? "text-white" : "text-slate-400"}`} />
+                <span>Global Settings</span>
               </button>
-            );
-          })}
+            ))}
+          </div>
+
+          {/* 2. Content Section */}
+          <div>
+            <div className="mb-3 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Website Content</div>
+            <div className="space-y-1">
+              {cmsPages.filter(p => p.id !== "global").map((p) => {
+                const Icon = ICON_MAP[p.icon] || FileText;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setActivePage(p.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === p.id 
+                      ? "bg-primary text-white shadow-lg shadow-primary/25" 
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
+                  >
+                    <Icon className={`w-4 h-4 shrink-0 ${activePage === p.id ? "text-white" : "text-slate-400"}`} />
+                    <span className="truncate">{p.label} Page</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3. Data Section */}
+          <div>
+            <div className="mb-3 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">User Inquiries</div>
+            <div className="space-y-1">
+              <button onClick={() => setActivePage("enquiries")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "enquiries" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+                <FileText className={`w-4 h-4 ${activePage === "enquiries" ? "text-white" : "text-slate-400"}`} /> Enquiries
+              </button>
+              <button onClick={() => setActivePage("contacts")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "contacts" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+                <Phone className={`w-4 h-4 ${activePage === "contacts" ? "text-white" : "text-slate-400"}`} /> Messages
+              </button>
+            </div>
+          </div>
+
+          {/* 4. Profile Section */}
+          <div>
+            <div className="mb-3 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Account</div>
+            <button onClick={() => setActivePage("profile")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "profile" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+              <User className={`w-4 h-4 ${activePage === "profile" ? "text-white" : "text-slate-400"}`} /> My Profile
+            </button>
+          </div>
         </nav>
-        <div className="p-2 sm:p-3 border-t">
-          <p className="text-[10px] sm:text-xs text-muted-foreground mb-2 truncate">{user?.email}</p>
-          <Button variant="outline" size="sm" className="w-full text-xs" onClick={signOut}>
-            <LogOut className="w-4 h-4 mr-2" /> Logout
-          </Button>
+
+        <div className="p-6 bg-slate-50/50 border-t border-slate-100">
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+              {user?.email?.charAt(0).toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-slate-900 truncate">Administrator</p>
+              <p className="text-[10px] text-slate-400 truncate">{user?.email}</p>
+            </div>
+          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 min-w-0 overflow-y-auto">
-        {/* Mobile header */}
-        <div className="sticky top-0 z-30 bg-background border-b p-3 flex items-center gap-3 lg:hidden">
-          <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-muted">
-            <Menu className="w-5 h-5" />
-          </button>
-          <h1 className="font-heading text-sm font-bold truncate">
-            {activePage === "enquiries" ? "Enquiries" : activePage === "contacts" ? "Messages" : activePage === "profile" ? "My Profile" : (pageConfig?.label || activePage)}
-          </h1>
-          {isCmsPage && hasDirtyFields && (
-            <Button size="sm" onClick={saveAllDrafts} disabled={saving} className="ml-auto text-xs">
-              {saving ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Save className="w-3 h-3 mr-1" />}
-              Save ({Object.keys(drafts).length})
+      <main className="flex-1 min-w-0 flex flex-col h-screen overflow-hidden">
+        {/* Header */}
+        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 relative z-30">
+          <div className="flex items-center gap-4">
+            <button onClick={() => setSidebarOpen(true)} className="p-2 lg:hidden rounded-xl hover:bg-slate-50 text-slate-500 transition-colors">
+              <Menu className="w-6 h-6" />
+            </button>
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-bold text-slate-900">
+                {activePage === "enquiries" ? "Student Enquiries" : activePage === "contacts" ? "Contact Messages" : activePage === "profile" ? "My Account Profile" : (pageConfig?.label || activePage)}
+              </h1>
+              <p className="text-xs text-slate-400 font-medium">Dashboard / {activePage.charAt(0).toUpperCase() + activePage.slice(1)}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-4">
+            {isCmsPage && hasDirtyFields && (
+              <Button size="sm" onClick={saveAllDrafts} disabled={saving} className="shadow-lg shadow-primary/20">
+                {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                <span className="hidden sm:inline">Save Changes ({Object.keys(drafts).length})</span>
+                <span className="sm:hidden">Save ({Object.keys(drafts).length})</span>
+              </Button>
+            )}
+            
+            <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
+            
+            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors font-bold text-xs uppercase tracking-wider" onClick={signOut}>
+              <LogOut className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Logout</span>
             </Button>
-          )}
-        </div>
+          </div>
+        </header>
 
-        <div className="p-3 sm:p-4 lg:p-6 max-w-5xl mx-auto">
-          {activePage === "enquiries" && renderEnquiries()}
-          {activePage === "contacts" && renderContacts()}
-          {activePage === "profile" && renderProfile()}
+        <div className="flex-1 overflow-y-auto bg-[#f8fafc] p-6 lg:p-10">
+          <div className="max-w-5xl mx-auto pb-20">
+            {activePage === "enquiries" && renderEnquiries()}
+            {activePage === "contacts" && renderContacts()}
+            {activePage === "profile" && renderProfile()}
 
-          {isCmsPage && (
-            <>
-              <div className="hidden lg:flex items-center justify-between mb-8">
-                <div>
-                  <h1 className="font-heading text-2xl font-bold">{pageConfig?.label || activePage} Page</h1>
-                  <p className="text-muted-foreground text-sm">Manage all sections, text, and images</p>
-                </div>
-                <div className="flex gap-2">
-                  {hasDirtyFields && (
-                    <Button onClick={saveAllDrafts} disabled={saving}>
-                      {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                      Save All ({Object.keys(drafts).length})
-                    </Button>
-                  )}
-                  <Button variant="outline" size="sm" onClick={activeCms.fetchContent}>
-                    <RefreshCw className="w-4 h-4 mr-1" /> Refresh
+            {isCmsPage && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-bold text-slate-800">Page Configuration</h2>
+                  <Button variant="ghost" size="sm" onClick={activeCms.fetchContent} className="text-slate-400 hover:text-primary">
+                    <RefreshCw className="w-4 h-4 mr-2" /> Sync Data
                   </Button>
                 </div>
-              </div>
 
-              {activeCms.loading ? (
-                <div className="flex items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                </div>
-              ) : (
-                <div className="space-y-3 sm:space-y-4">
-                  {pageConfig?.sections.map(section => renderSection(section))}
-                </div>
-              )}
-            </>
-          )}
+                {activeCms.loading ? (
+                  <div className="flex flex-col items-center justify-center py-32 bg-white rounded-[2rem] border border-slate-100 shadow-sm">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+                      <Loader2 className="w-10 h-10 animate-spin text-primary relative z-10" />
+                    </div>
+                    <p className="mt-4 text-slate-400 font-medium text-sm">Loading content editors...</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-6">
+                    {pageConfig?.sections.map(section => renderSection(section))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </main>
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #e2e8f0;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #cbd5e1;
+        }
+      `}</style>
     </div>
+
   );
 };
 
