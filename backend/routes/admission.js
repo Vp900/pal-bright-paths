@@ -8,7 +8,20 @@ const router = express.Router();
 // Submit Admission Form
 router.post('/submit', async (req, res) => {
     try {
-        const newAdmission = new Admission(req.body);
+        const {
+            studentName, parentName, phone, email, class: admissionClass,
+            address, dateOfBirth, gender, previousSchool
+        } = req.body;
+
+        // Validation
+        if (!studentName || !parentName || !phone || !admissionClass || !address || !dateOfBirth || !gender) {
+            return res.status(400).json({ msg: 'Please enter all required fields' });
+        }
+
+        const newAdmission = new Admission({
+            studentName, parentName, phone, email, class: admissionClass,
+            address, dateOfBirth, gender, previousSchool
+        });
         const admission = await newAdmission.save();
 
         // Send email notification
@@ -21,14 +34,15 @@ router.post('/submit', async (req, res) => {
                 'Class': admission.class,
                 'Gender': admission.gender,
                 'DOB': admission.dateOfBirth,
-                'Address': admission.address
+                'Address': admission.address,
+                'Prev School': admission.previousSchool || 'N/A'
             });
             await sendEmail(process.env.ADMIN_EMAIL || "vikaspal90042@gmail.com", "New Admission Application Received", adminHtml);
         } catch (e) {
             console.error("Email send failed:", e);
         }
 
-        res.status(201).json(admission);
+        res.status(201).json({ success: true, data: admission });
     } catch (err) {
         console.error("Admission submit error:", err.message);
         res.status(500).send('Server Error');

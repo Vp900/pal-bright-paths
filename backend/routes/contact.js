@@ -8,7 +8,14 @@ const router = express.Router();
 // Submit Contact Form
 router.post('/submit', async (req, res) => {
     try {
-        const newContact = new Contact(req.body);
+        const { name, email, phone, subject, message } = req.body;
+
+        // Validation
+        if (!name || !email || !message) {
+            return res.status(400).json({ msg: 'Name, Email and Message are required' });
+        }
+
+        const newContact = new Contact({ name, email, phone, subject, message });
         const contact = await newContact.save();
 
         // Send email notification
@@ -25,7 +32,7 @@ router.post('/submit', async (req, res) => {
             console.error("Email send failed:", e);
         }
 
-        res.status(201).json(contact);
+        res.status(201).json({ success: true, data: contact });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

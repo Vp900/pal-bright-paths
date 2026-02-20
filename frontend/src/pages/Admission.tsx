@@ -61,10 +61,17 @@ const Admission = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Client-side validation
+      if (!formData.name || !formData.phone || !formData.class) {
+        toast.error("Please fill all required fields");
+        setSubmitting(false);
+        return;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/enquiry/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, type: 'general' }),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) throw new Error("Failed");
@@ -82,16 +89,21 @@ const Admission = () => {
     e.preventDefault();
     setDemoSubmitting(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/enquiry/submit`, {
+      // Client-side validation
+      if (!demoData.name || !demoData.phone || !demoData.class || !demoData.preferredDate) {
+        toast.error("Please fill all required fields");
+        setDemoSubmitting(false);
+        return;
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/demo/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: demoData.name,
           phone: demoData.phone,
           class: demoData.class,
-          preferredDate: demoData.preferredDate,
-          type: 'demo',
-          message: 'Demo Class Request'
+          preferredDate: demoData.preferredDate
         }),
       });
 
@@ -110,6 +122,14 @@ const Admission = () => {
     e.preventDefault();
     setAdmissionSubmitting(true);
     try {
+      // Client-side validation
+      const { studentName, parentName, phone, class: admissionClass, address, dateOfBirth, gender } = admissionData;
+      if (!studentName || !parentName || !phone || !admissionClass || !address || !dateOfBirth || !gender) {
+        toast.error("Please fill all mandatory fields (*)");
+        setAdmissionSubmitting(false);
+        return;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/admission/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

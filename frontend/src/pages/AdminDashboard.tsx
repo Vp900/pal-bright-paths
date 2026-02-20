@@ -63,7 +63,8 @@ const AdminDashboard = () => {
     }
     setSidebarOpen(false);
 
-    if (activePage === "enquiries" || activePage === "demo-bookings") fetchEnquiries();
+    if (activePage === "enquiries") fetchEnquiries();
+    if (activePage === "demo-bookings") fetchDemos();
     if (activePage === "contacts") fetchContacts();
     if (activePage === "admissions") fetchAdmissions();
   }, [activePage]);
@@ -74,13 +75,22 @@ const AdminDashboard = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/enquiry`, {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });
-      if (res.ok) {
-        const allData = await res.json();
-        setEnquiries(allData.filter((item: any) => item.type === 'general' || !item.type));
-        setDemoBookings(allData.filter((item: any) => item.type === 'demo'));
-      }
+      if (res.ok) setEnquiries(await res.json());
     } catch (e) {
       toast.error("Failed to load enquiries");
+    }
+    setDataLoading(false);
+  };
+
+  const fetchDemos = async () => {
+    setDataLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/demo`, {
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (res.ok) setDemoBookings(await res.json());
+    } catch (e) {
+      toast.error("Failed to load demo bookings");
     }
     setDataLoading(false);
   };
@@ -255,26 +265,49 @@ const AdminDashboard = () => {
 
   const renderEnquiries = () => (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold font-heading">Enquiries</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold font-heading">General Enquiries</h2>
+        <Button variant="outline" size="sm" onClick={fetchEnquiries} disabled={dataLoading}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} /> Refresh
+        </Button>
+      </div>
       {dataLoading ? <Loader2 className="animate-spin" /> : (
         <div className="grid gap-4">
           {enquiries.map((enq) => (
-            <div key={enq._id || enq.id} className="bg-card p-4 rounded-xl border">
-              <div className="flex justify-between items-start">
+            <div key={enq._id || enq.id} className="bg-card p-5 rounded-xl border shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-semibold">{enq.name}</h3>
-                  <p className="text-sm text-muted-foreground">{enq.email} | {enq.phone}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Class: {enq.class || "N/A"}</p>
+                  <h3 className="font-bold text-lg text-slate-900">{enq.name}</h3>
+                  <p className="text-sm font-medium text-primary">Class: {enq.class || "N/A"}</p>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full ${enq.type === 'demo' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {enq.type || 'General'}
+                <span className="text-[10px] font-bold uppercase py-1 px-3 rounded-full bg-slate-100 text-slate-600">
+                  Enquiry
                 </span>
               </div>
-              <p className="mt-2 text-sm">{enq.message}</p>
-              <p className="text-xs text-muted-foreground mt-2">{new Date(enq.date).toLocaleDateString()}</p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4 bg-slate-50 p-3 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{enq.phone}</span>
+                </div>
+              </div>
+
+              {enq.message && (
+                <div className="relative pl-4 border-l-2 border-primary/20 italic text-slate-600 text-sm py-1 mb-3">
+                  "{enq.message}"
+                </div>
+              )}
+
+              <div className="text-[10px] text-slate-400 mt-2 pt-3 border-t">
+                Received: {new Date(enq.date).toLocaleString()}
+              </div>
             </div>
           ))}
-          {enquiries.length === 0 && <p>No enquiries found.</p>}
+          {enquiries.length === 0 && (
+            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
+              <p className="text-slate-400">No general enquiries found.</p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -282,18 +315,51 @@ const AdminDashboard = () => {
 
   const renderContacts = () => (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold font-heading">Contact Messages</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold font-heading">Messages</h2>
+        <Button variant="outline" size="sm" onClick={fetchContacts} disabled={dataLoading}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} /> Refresh
+        </Button>
+      </div>
       {dataLoading ? <Loader2 className="animate-spin" /> : (
         <div className="grid gap-4">
           {contacts.map((contact) => (
-            <div key={contact._id || contact.id} className="bg-card p-4 rounded-xl border">
-              <h3 className="font-semibold">{contact.subject}</h3>
-              <p className="text-sm text-muted-foreground">{contact.name} ({contact.email})</p>
-              <p className="mt-2 text-sm whitespace-pre-wrap">{contact.message}</p>
-              <p className="text-xs text-muted-foreground mt-2">{new Date(contact.date).toLocaleDateString()}</p>
+            <div key={contact._id || contact.id} className="bg-card p-5 rounded-xl border shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="font-bold text-lg text-slate-900">{contact.name}</h3>
+                  <p className="text-sm font-semibold text-primary">{contact.subject || 'Website Message'}</p>
+                </div>
+                <span className="text-[10px] font-bold uppercase py-1 px-3 rounded-full bg-slate-100 text-slate-600">
+                  Message
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4 bg-slate-50 p-3 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{contact.phone || 'N/A'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-slate-400" />
+                  <span className="truncate">{contact.email}</span>
+                </div>
+              </div>
+
+              <div className="bg-white border rounded-lg p-3 text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
+                {contact.message}
+              </div>
+
+              <div className="text-[10px] text-slate-400 mt-4 pt-3 border-t">
+                Received: {new Date(contact.date).toLocaleString()}
+              </div>
             </div>
           ))}
-          {contacts.length === 0 && <p>No messages found.</p>}
+          {contacts.length === 0 && (
+            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
+              <p className="text-slate-400">No contact messages found.</p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -337,34 +403,46 @@ const AdminDashboard = () => {
   const renderDemoBookings = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold font-heading">Demo Class Bookings</h2>
-        <Button variant="outline" size="sm" onClick={fetchEnquiries} disabled={dataLoading}>
+        <h2 className="text-xl font-bold font-heading">Demo Bookings</h2>
+        <Button variant="outline" size="sm" onClick={fetchDemos} disabled={dataLoading}>
           <RefreshCw className={`w-4 h-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} /> Refresh
         </Button>
       </div>
       {dataLoading ? <Loader2 className="animate-spin" /> : (
         <div className="grid gap-4">
           {demoBookings.map((demo) => (
-            <div key={demo._id || demo.id} className="bg-card p-4 rounded-xl border border-primary/20 bg-primary/5">
-              <div className="flex justify-between items-start">
+            <div key={demo._id || demo.id} className="bg-card p-5 rounded-xl border border-primary/20 bg-primary/5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-bold text-primary">{demo.name}</h3>
-                  <p className="text-sm font-medium">Class: {demo.class}</p>
-                  <p className="text-sm text-muted-foreground">{demo.phone}</p>
+                  <h3 className="font-bold text-lg text-slate-900">{demo.name}</h3>
+                  <p className="text-sm font-semibold text-primary">Class: {demo.class}</p>
                 </div>
-                <div className="text-right">
-                  <span className="bg-primary text-white text-[10px] px-2 py-1 rounded-full font-bold uppercase block mb-1">
-                    Demo Request
-                  </span>
-                  <p className="text-xs font-bold text-primary">Date: {demo.preferredDate || 'N/A'}</p>
+                <span className="text-[10px] font-bold uppercase py-1 px-3 rounded-full bg-primary text-white">
+                  Demo Request
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-2 bg-white/50 p-3 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-slate-400" />
+                  <span>{demo.phone}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ClipboardList className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Preferred Date: <span className="font-bold text-primary">{demo.preferredDate}</span></span>
                 </div>
               </div>
-              <div className="mt-3 text-xs text-muted-foreground pt-3 border-t">
+
+              <div className="text-[10px] text-slate-400 mt-2 pt-3 border-t border-primary/10">
                 Received: {new Date(demo.date).toLocaleString()}
               </div>
             </div>
           ))}
-          {demoBookings.length === 0 && <p className="text-center text-muted-foreground py-10">No demo class bookings found.</p>}
+          {demoBookings.length === 0 && (
+            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
+              <p className="text-slate-400">No demo class bookings found.</p>
+            </div>
+          )}
         </div>
       )}
     </div>

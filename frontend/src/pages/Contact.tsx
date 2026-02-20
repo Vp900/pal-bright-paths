@@ -34,19 +34,29 @@ const Contact = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
+      // Client-side validation
+      if (!formData.name || !formData.email || !formData.message) {
+        toast.error("Please fill all required fields");
+        setSubmitting(false);
+        return;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/contact/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to send");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || "Failed to send");
+      }
 
       setSubmitted(true);
       toast.success("Message sent successfully!");
       setFormData({ name: "", email: "", phone: "", message: "" });
-    } catch (err) {
-      toast.error("Failed to send. Please try again.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send. Please try again.");
     }
     setSubmitting(false);
   };

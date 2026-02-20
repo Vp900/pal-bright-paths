@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
-const enquirySchema = new mongoose.Schema({
+const demoSchema = new mongoose.Schema({
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    message: { type: String, required: false },
     class: { type: String, required: true },
+    preferredDate: { type: String, required: true },
     date: { type: Date, default: Date.now },
 });
 
-const Enquiry = mongoose.model('Enquiry', enquirySchema);
-module.exports = { Enquiry };
+const Demo = mongoose.model('Demo', demoSchema);
+module.exports = { Demo };
