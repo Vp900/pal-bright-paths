@@ -32,6 +32,7 @@ const AdminDashboard = () => {
 
   // New State for Enquiries/Contacts
   const [enquiries, setEnquiries] = useState<any[]>([]);
+  const [demoBookings, setDemoBookings] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
   const [admissions, setAdmissions] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
@@ -62,7 +63,7 @@ const AdminDashboard = () => {
     }
     setSidebarOpen(false);
 
-    if (activePage === "enquiries") fetchEnquiries();
+    if (activePage === "enquiries" || activePage === "demo-bookings") fetchEnquiries();
     if (activePage === "contacts") fetchContacts();
     if (activePage === "admissions") fetchAdmissions();
   }, [activePage]);
@@ -73,7 +74,11 @@ const AdminDashboard = () => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/enquiry`, {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });
-      if (res.ok) setEnquiries(await res.json());
+      if (res.ok) {
+        const allData = await res.json();
+        setEnquiries(allData.filter((item: any) => item.type === 'general' || !item.type));
+        setDemoBookings(allData.filter((item: any) => item.type === 'demo'));
+      }
     } catch (e) {
       toast.error("Failed to load enquiries");
     }
@@ -324,6 +329,42 @@ const AdminDashboard = () => {
             </div>
           ))}
           {admissions.length === 0 && <p className="text-center text-muted-foreground py-10">No admission records found.</p>}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderDemoBookings = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold font-heading">Demo Class Bookings</h2>
+        <Button variant="outline" size="sm" onClick={fetchEnquiries} disabled={dataLoading}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} /> Refresh
+        </Button>
+      </div>
+      {dataLoading ? <Loader2 className="animate-spin" /> : (
+        <div className="grid gap-4">
+          {demoBookings.map((demo) => (
+            <div key={demo._id || demo.id} className="bg-card p-4 rounded-xl border border-primary/20 bg-primary/5">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-bold text-primary">{demo.name}</h3>
+                  <p className="text-sm font-medium">Class: {demo.class}</p>
+                  <p className="text-sm text-muted-foreground">{demo.phone}</p>
+                </div>
+                <div className="text-right">
+                  <span className="bg-primary text-white text-[10px] px-2 py-1 rounded-full font-bold uppercase block mb-1">
+                    Demo Request
+                  </span>
+                  <p className="text-xs font-bold text-primary">Date: {demo.preferredDate || 'N/A'}</p>
+                </div>
+              </div>
+              <div className="mt-3 text-xs text-muted-foreground pt-3 border-t">
+                Received: {new Date(demo.date).toLocaleString()}
+              </div>
+            </div>
+          ))}
+          {demoBookings.length === 0 && <p className="text-center text-muted-foreground py-10">No demo class bookings found.</p>}
         </div>
       )}
     </div>
@@ -617,6 +658,9 @@ const AdminDashboard = () => {
               <button onClick={() => setActivePage("enquiries")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "enquiries" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
                 <FileText className={`w-4 h-4 ${activePage === "enquiries" ? "text-white" : "text-slate-400"}`} /> Enquiries
               </button>
+              <button onClick={() => setActivePage("demo-bookings")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "demo-bookings" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+                <GraduationCap className={`w-4 h-4 ${activePage === "demo-bookings" ? "text-white" : "text-slate-400"}`} /> Demo Bookings
+              </button>
               <button onClick={() => setActivePage("contacts")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "contacts" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
                 <Phone className={`w-4 h-4 ${activePage === "contacts" ? "text-white" : "text-slate-400"}`} /> Messages
               </button>
@@ -655,7 +699,7 @@ const AdminDashboard = () => {
             </button>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-slate-900">
-                {activePage === "enquiries" ? "Student Enquiries" : activePage === "contacts" ? "Contact Messages" : activePage === "profile" ? "My Account Profile" : (pageConfig?.label || activePage)}
+                {activePage === "admissions" ? "Student Admissions" : activePage === "enquiries" ? "General Enquiries" : activePage === "demo-bookings" ? "Demo Class Bookings" : activePage === "contacts" ? "Contact Messages" : activePage === "profile" ? "My Account Profile" : (pageConfig?.label || activePage)}
               </h1>
               <p className="text-xs text-slate-400 font-medium">Dashboard / {activePage.charAt(0).toUpperCase() + activePage.slice(1)}</p>
             </div>
@@ -683,6 +727,7 @@ const AdminDashboard = () => {
           <div className="max-w-5xl mx-auto pb-20">
             {activePage === "admissions" && renderAdmissions()}
             {activePage === "enquiries" && renderEnquiries()}
+            {activePage === "demo-bookings" && renderDemoBookings()}
             {activePage === "contacts" && renderContacts()}
             {activePage === "profile" && renderProfile()}
 

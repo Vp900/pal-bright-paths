@@ -16,10 +16,11 @@ router.post('/submit', async (req, res) => {
             const adminHtml = generateAdminEmailTemplate('New Contact Form Submission', {
                 Name: contact.name,
                 Email: contact.email,
-                Subject: contact.subject,
+                Phone: contact.phone || 'N/A',
+                Subject: contact.subject || 'Website Contact',
                 Message: contact.message
             });
-            await sendEmail(process.env.ADMIN_EMAIL || "admin@example.com", "New Contact Received", adminHtml);
+            await sendEmail(process.env.ADMIN_EMAIL || "vikaspal90042@gmail.com", "New Contact Received", adminHtml);
         } catch (e) {
             console.error("Email send failed:", e);
         }
