@@ -38,11 +38,11 @@ app.get('/', (req, res) => {
   res.send('Backend is running');
 });
 
-/* DB */
+// ...
 mongoose.connect(process.env.MONGO_URI as string)
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(port, () => {
+    app.listen(port, "0.0.0.0", () => {
       console.log(`Server running on port ${port}`);
     });
   })
