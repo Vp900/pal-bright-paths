@@ -14,6 +14,7 @@ dotenv.config();
 const authRoutes = require('./routes/auth');
 const enquiryRoutes = require('./routes/enquiry');
 const contactRoutes = require('./routes/contact');
+const admissionRoutes = require('./routes/admission');
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;
@@ -41,6 +42,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/enquiry', enquiryRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/admission', admissionRoutes);
 
 app.get('/', (req, res) => {
   res.send('Backend is running');

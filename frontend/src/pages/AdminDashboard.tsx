@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   LogOut, Save, Trash2, Upload, Plus, Loader2,
   FileText, Home, Info, BookOpen, Award, GalleryHorizontal, Phone,
-  GraduationCap, Settings, Check, ChevronDown, ChevronRight, RefreshCw, Menu, X, User
+  GraduationCap, Settings, Check, ChevronDown, ChevronRight, RefreshCw, Menu, X, User, ClipboardList
 } from "lucide-react";
 import { cmsPages, type CmsSection, type CmsField, type CmsImageField } from "@/config/cmsConfig";
 import logoImg from "@/assets/logo.jpeg";
@@ -33,6 +33,7 @@ const AdminDashboard = () => {
   // New State for Enquiries/Contacts
   const [enquiries, setEnquiries] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
+  const [admissions, setAdmissions] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
 
   // Profile State
@@ -63,6 +64,7 @@ const AdminDashboard = () => {
 
     if (activePage === "enquiries") fetchEnquiries();
     if (activePage === "contacts") fetchContacts();
+    if (activePage === "admissions") fetchAdmissions();
   }, [activePage]);
 
   const fetchEnquiries = async () => {
@@ -87,6 +89,19 @@ const AdminDashboard = () => {
       if (res.ok) setContacts(await res.json());
     } catch (e) {
       toast.error("Failed to load messages");
+    }
+    setDataLoading(false);
+  };
+
+  const fetchAdmissions = async () => {
+    setDataLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admission`, {
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (res.ok) setAdmissions(await res.json());
+    } catch (e) {
+      toast.error("Failed to load admissions");
     }
     setDataLoading(false);
   };
@@ -274,6 +289,41 @@ const AdminDashboard = () => {
             </div>
           ))}
           {contacts.length === 0 && <p>No messages found.</p>}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderAdmissions = () => (
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold font-heading">Admission Applications</h2>
+      {dataLoading ? <Loader2 className="animate-spin" /> : (
+        <div className="grid gap-4">
+          {admissions.map((adm) => (
+            <div key={adm._id || adm.id} className="bg-card p-4 rounded-xl border">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-bold text-primary">{adm.studentName}</h3>
+                  <p className="text-sm font-semibold">Parent: {adm.parentName}</p>
+                  <p className="text-sm text-muted-foreground">{adm.email || 'No Email'} | {adm.phone}</p>
+                </div>
+                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-bold uppercase">
+                  Class {adm.class}
+                </span>
+              </div>
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs border-t pt-3">
+                <p><span className="text-muted-foreground font-medium">DOB:</span> {adm.dateOfBirth}</p>
+                <p><span className="text-muted-foreground font-medium">Gender:</span> {adm.gender}</p>
+                <p className="sm:col-span-2"><span className="text-muted-foreground font-medium">Address:</span> {adm.address}</p>
+                {adm.previousSchool && <p className="sm:col-span-2"><span className="text-muted-foreground font-medium">School:</span> {adm.previousSchool}</p>}
+              </div>
+              <div className="flex justify-between items-center mt-3 pt-3 border-t">
+                <span className="text-[10px] text-muted-foreground">Received: {new Date(adm.date).toLocaleString()}</span>
+                <span className="text-[10px] font-bold uppercase py-1 px-2 rounded bg-slate-100">{adm.status}</span>
+              </div>
+            </div>
+          ))}
+          {admissions.length === 0 && <p className="text-center text-muted-foreground py-10">No admission records found.</p>}
         </div>
       )}
     </div>
@@ -525,8 +575,8 @@ const AdminDashboard = () => {
               <button
                 key={p.id}
                 onClick={() => setActivePage(p.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === p.id 
-                  ? "bg-primary text-white shadow-lg shadow-primary/25" 
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === p.id
+                  ? "bg-primary text-white shadow-lg shadow-primary/25"
                   : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
               >
                 <Settings className={`w-4 h-4 ${activePage === p.id ? "text-white" : "text-slate-400"}`} />
@@ -545,8 +595,8 @@ const AdminDashboard = () => {
                   <button
                     key={p.id}
                     onClick={() => setActivePage(p.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === p.id 
-                      ? "bg-primary text-white shadow-lg shadow-primary/25" 
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === p.id
+                      ? "bg-primary text-white shadow-lg shadow-primary/25"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}
                   >
                     <Icon className={`w-4 h-4 shrink-0 ${activePage === p.id ? "text-white" : "text-slate-400"}`} />
@@ -561,6 +611,9 @@ const AdminDashboard = () => {
           <div>
             <div className="mb-3 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">User Inquiries</div>
             <div className="space-y-1">
+              <button onClick={() => setActivePage("admissions")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "admissions" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+                <ClipboardList className={`w-4 h-4 ${activePage === "admissions" ? "text-white" : "text-slate-400"}`} /> Admissions
+              </button>
               <button onClick={() => setActivePage("enquiries")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "enquiries" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
                 <FileText className={`w-4 h-4 ${activePage === "enquiries" ? "text-white" : "text-slate-400"}`} /> Enquiries
               </button>
@@ -616,9 +669,9 @@ const AdminDashboard = () => {
                 <span className="sm:hidden">Save ({Object.keys(drafts).length})</span>
               </Button>
             )}
-            
+
             <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
-            
+
             <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors font-bold text-xs uppercase tracking-wider" onClick={signOut}>
               <LogOut className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Logout</span>
@@ -628,6 +681,7 @@ const AdminDashboard = () => {
 
         <div className="flex-1 overflow-y-auto bg-[#f8fafc] p-6 lg:p-10">
           <div className="max-w-5xl mx-auto pb-20">
+            {activePage === "admissions" && renderAdmissions()}
             {activePage === "enquiries" && renderEnquiries()}
             {activePage === "contacts" && renderContacts()}
             {activePage === "profile" && renderProfile()}
