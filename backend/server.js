@@ -8,15 +8,8 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const connectDB = require('./config/db');
 
-
 // Load env vars
 dotenv.config();
-
-// Connect to Database
-(async () => {
-  await connectDB();
-})();
-
 
 const authRoutes = require('./routes/auth');
 const enquiryRoutes = require('./routes/enquiry');
@@ -53,7 +46,18 @@ app.get('/', (req, res) => {
   res.send('Backend is running');
 });
 
-app.listen(port, '0.0.0.0', () => {
-  console.log(`✅ Server running on http://0.0.0.0:${port}`);
-});
+// Connect to Database and Start Server
+const startServer = async () => {
+  try {
+    await connectDB();
 
+    app.listen(port, '0.0.0.0', () => {
+      console.log(`✅ Server running on http://0.0.0.0:${port}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
