@@ -26,7 +26,7 @@ router.post('/submit', async (req, res) => {
                 'Class': demo.class,
                 'Preferred Date': demo.preferredDate
             });
-            await sendEmail(process.env.ADMIN_EMAIL || "vikaspal90042@gmail.com", "New Demo Booking Received", adminHtml);
+            await sendEmail(process.env.ADMIN_EMAIL || "info.palclasses@gmail.com", "New Demo Booking Received", adminHtml);
         } catch (e) {
             console.error("Email send failed:", e);
         }

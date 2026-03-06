@@ -50,7 +50,7 @@ export const cmsPages: CmsPage[] = [
           { key: "site_name", label: "Site Name", type: "text", placeholder: "Pal Classes" },
           { key: "site_tagline", label: "Tagline", type: "text", placeholder: "Where Excellence is a Tradition" },
           { key: "topbar_phone", label: "Top Bar Phone", type: "text", placeholder: "+91 80803 21805" },
-          { key: "topbar_email", label: "Top Bar Email", type: "text", placeholder: "info@palclasses.com" },
+          { key: "topbar_email", label: "Top Bar Email", type: "text", placeholder: "info.palclasses@gmail.com" },
           { key: "topbar_location", label: "Top Bar Location", type: "text", placeholder: "Wadala East, Mumbai" },
         ],
         images: [
@@ -77,7 +77,6 @@ export const cmsPages: CmsPage[] = [
           { key: "phone1", label: "Phone 1", type: "text" },
           { key: "phone2", label: "Phone 2", type: "text" },
           { key: "email1", label: "Email 1", type: "text" },
-          { key: "email2", label: "Email 2", type: "text" },
           { key: "working_hours", label: "Working Hours", type: "textarea" },
           { key: "map_embed_url", label: "Google Map Embed URL", type: "url" },
         ],

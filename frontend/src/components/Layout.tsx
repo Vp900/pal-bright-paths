@@ -24,7 +24,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const siteName = getContent("site_name", "Pal Classes");
   const siteTagline = getContent("site_tagline", "Where Excellence is a Tradition");
   const topbarPhone = getContent("topbar_phone", "+91 80803 21805");
-  const topbarEmail = getContent("topbar_email", "info@palclasses.com");
+  const topbarEmail = getContent("topbar_email", "info.palclasses@gmail.com");
   const topbarLocation = getContent("topbar_location", "Wadala East, Mumbai");
   const logoImg = getImage("site_logo", logoImgFallback);
 
@@ -38,7 +38,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const address = getContent("address", "17, 2/4 Barkat Ali Nagar, Salt Pans Road, Wadala East, Mumbai – 400037, Maharashtra, India");
   const phone1 = getContent("phone1", "+91 80803 21805");
   const phone2 = getContent("phone2", "+91 97683 87999");
-  const email1 = getContent("email1", "info@palclasses.com");
+  const email1 = getContent("email1", "info.palclasses@gmail.com");
 
   return (
     <div className="min-h-screen flex flex-col">

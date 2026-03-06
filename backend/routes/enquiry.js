@@ -28,7 +28,7 @@ router.post("/submit", async (req, res) => {
         'Class': enquiry.class || 'N/A',
         'Message': enquiry.message || 'N/A'
       });
-      await sendEmail(process.env.ADMIN_EMAIL || "vikaspal90042@gmail.com", `New Enquiry Received`, adminHtml);
+      await sendEmail(process.env.ADMIN_EMAIL || "info.palclasses@gmail.com", `New Enquiry Received`, adminHtml);
     } catch (e) {
       console.error("Email send failed:", e);
     }

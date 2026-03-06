@@ -37,7 +37,7 @@ router.post('/submit', async (req, res) => {
                 'Address': admission.address,
                 'Prev School': admission.previousSchool || 'N/A'
             });
-            await sendEmail(process.env.ADMIN_EMAIL || "vikaspal90042@gmail.com", "New Admission Application Received", adminHtml);
+            await sendEmail(process.env.ADMIN_EMAIL || "info.palclasses@gmail.com", "New Admission Application Received", adminHtml);
         } catch (e) {
             console.error("Email send failed:", e);
         }

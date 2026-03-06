@@ -24,8 +24,7 @@ const Contact = () => {
   const address = globalCms.getContent("address", "17, 2/4 Barkat Ali Nagar, Salt Pans Road,\nWadala East, Mumbai – 400037,\nMaharashtra, India");
   const phone1 = globalCms.getContent("phone1", "+91 80803 21805");
   const phone2 = globalCms.getContent("phone2", "+91 97683 87999");
-  const email1 = globalCms.getContent("email1", "info@palclasses.com");
-  const email2 = globalCms.getContent("email2", "admissions@palclasses.com");
+  const email1 = globalCms.getContent("email1", "info.palclasses@gmail.com");
   const workingHours = globalCms.getContent("working_hours", "Mon - Sat: 7:00 AM - 8:00 PM\nSunday: 9:00 AM - 2:00 PM");
   const whatsappNumber = globalCms.getContent("whatsapp_number", "918080321805");
   const mapUrl = globalCms.getContent("map_embed_url", "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.5!2d72.8685!3d19.0178!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7cf26f4e8b7e5%3A0x7b3cfb6e7a7a6f9a!2sWadala%20East%2C%20Mumbai%2C%20Maharashtra%20400037!5e0!3m2!1sen!2sin!4v1700000000000");
@@ -98,7 +97,7 @@ const Contact = () => {
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"><Mail className="w-4 h-4 sm:w-5 sm:h-5 text-primary" /></div>
                   <div>
                     <h3 className="font-heading font-semibold mb-1 text-sm sm:text-base">Email</h3>
-                    <p className="text-muted-foreground text-xs sm:text-sm">{email1}<br />{email2}</p>
+                    <p className="text-muted-foreground text-xs sm:text-sm">{email1}</p>
                   </div>
                 </div>
                 <div className="flex gap-3 sm:gap-4">

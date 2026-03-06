@@ -27,7 +27,7 @@ router.post('/submit', async (req, res) => {
                 Subject: contact.subject || 'Website Contact',
                 Message: contact.message
             });
-            await sendEmail(process.env.ADMIN_EMAIL || "vikaspal90042@gmail.com", "New Contact Received", adminHtml);
+            await sendEmail(process.env.ADMIN_EMAIL || "info.palclasses@gmail.com", "New Contact Received", adminHtml);
         } catch (e) {
             console.error("Email send failed:", e);
         }

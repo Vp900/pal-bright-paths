@@ -30,7 +30,8 @@ if (allowedOrigins.length === 0) {
   allowedOrigins.push(
     'http://localhost:5173',
     'http://localhost:8080',
-    'https://pal-bright-paths-1.onrender.com'
+    'https://pal-bright-paths-1.onrender.com',
+    'https://palclasses.com'
   );
 }
 
