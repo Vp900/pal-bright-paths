@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Clock, Users, CheckCircle } from "lucide-react";
+import { BookOpen, Clock, Users, CheckCircle, FileText, Download, Eye, Search, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useCmsContent } from "@/hooks/useCms";
 
@@ -62,6 +64,32 @@ const Courses = () => {
       }))
     : defaultCourses;
 
+  const [notes, setNotes] = useState<any[]>([]);
+  const [loadingNotes, setLoadingNotes] = useState(true);
+  const [noteSearch, setNoteSearch] = useState("");
+  const [selectedClass, setSelectedClass] = useState("All");
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/notes`);
+      if (res.ok) setNotes(await res.json());
+    } catch (err) {
+      console.error("Failed to fetch notes:", err);
+    } finally {
+      setLoadingNotes(false);
+    }
+  };
+
+  const classes = ["All", ...new Set(notes.map(n => n.className))];
+  const filteredNotes = notes.filter(n => 
+    (selectedClass === "All" || n.className === selectedClass) &&
+    (n.title.toLowerCase().includes(noteSearch.toLowerCase()) || n.className.toLowerCase().includes(noteSearch.toLowerCase()))
+  );
+
   return (
     <>
       <section className="bg-hero-gradient py-20">
@@ -112,6 +140,84 @@ const Courses = () => {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+      <section className="py-16 bg-muted/30">
+        <div className="container space-y-10">
+          <div className="text-center space-y-4">
+            <h2 className="font-heading text-3xl md:text-4xl font-extrabold flex items-center justify-center gap-3">
+              <FileText className="w-8 h-8 text-primary" /> Study Notes & PDFs
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Access our specialized study materials and previous year notes for all classes.</p>
+          </div>
+
+          <div className="bg-card p-6 rounded-2xl border shadow-sm space-y-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search notes by title or class..." 
+                  className="pl-10"
+                  value={noteSearch}
+                  onChange={(e) => setNoteSearch(e.target.value)}
+                />
+              </div>
+              <div className="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
+                {classes.map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setSelectedClass(c)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${selectedClass === c ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {loadingNotes ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map(i => <div key={i} className="h-48 rounded-xl bg-muted animate-pulse" />)}
+              </div>
+            ) : filteredNotes.length > 0 ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredNotes.map((note) => (
+                  <div key={note._id} className="group bg-muted/20 border rounded-xl p-5 hover:bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
+                        <FileText className="w-6 h-6" />
+                      </div>
+                      <span className="bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
+                        {note.className}
+                      </span>
+                    </div>
+                    <h3 className="font-heading font-bold text-slate-900 mb-2 truncate">{note.title}</h3>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-6">
+                      Size: {(note.fileSize / (1024 * 1024)).toFixed(2)} MB
+                    </p>
+                    <div className="flex gap-2">
+                      <a href={`${import.meta.env.VITE_API_BASE_URL}${note.fileUrl}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+                        <Button variant="outline" size="sm" className="w-full gap-2 text-xs">
+                          <Eye className="w-3.5 h-3.5" /> View
+                        </Button>
+                      </a>
+                      <a href={`${import.meta.env.VITE_API_BASE_URL}${note.fileUrl}`} download className="flex-1">
+                        <Button size="sm" className="w-full gap-2 text-xs">
+                          <Download className="w-3.5 h-3.5" /> Download
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 border-2 border-dashed rounded-xl">
+                <FileText className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-muted-foreground">No notes found matching your criteria.</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
     </>

@@ -16,6 +16,9 @@ const enquiryRoutes = require('./routes/enquiry');
 const contactRoutes = require('./routes/contact');
 const admissionRoutes = require('./routes/admission');
 const demoRoutes = require('./routes/demo');
+const noteRoutes = require('./routes/note');
+const videoRoutes = require('./routes/video');
+const visitorRoutes = require('./routes/visitor');
 
 const app = express();
 const port = Number(process.env.PORT) || 5000;
@@ -58,7 +61,9 @@ app.use(cors({
   optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '600mb' }));
+app.use(express.urlencoded({ limit: '600mb', extended: true }));
+app.use('/uploads', express.static('uploads'));
 
 /* ROUTES */
 app.use('/api/auth', authRoutes);
@@ -66,6 +71,9 @@ app.use('/api/enquiry', enquiryRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/admission', admissionRoutes);
 app.use('/api/demo', demoRoutes);
+app.use('/api/notes', noteRoutes);
+app.use('/api/videos', videoRoutes);
+app.use('/api/visitor', visitorRoutes);
 
 app.get('/', (req, res) => {
   res.send('Backend is running');

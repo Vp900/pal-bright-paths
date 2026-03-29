@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Youtube, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { getContent, getImage } = useCmsContent("global");
+  const [visitorCount, setVisitorCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/visitor/count`)
+      .then(res => res.json())
+      .then(data => setVisitorCount(data.count))
+      .catch(err => console.error("Failed to fetch visitor count:", err));
+  }, []);
 
   const siteName = getContent("site_name", "Pal Classes");
   const siteTagline = getContent("site_tagline", "Where Excellence is a Tradition");
@@ -172,6 +180,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="border-t border-background/10">
           <div className="container py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-background/50">
             <span>{footerCopyright}</span>
+            {visitorCount !== null && (
+              <div className="flex items-center gap-2 bg-background/5 px-3 py-1 rounded-full border border-background/10">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">Visitors: {visitorCount}</span>
+              </div>
+            )}
           </div>
         </div>
       </footer>

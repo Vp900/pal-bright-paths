@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   LogOut, Save, Trash2, Upload, Plus, Loader2,
   FileText, Home, Info, BookOpen, Award, GalleryHorizontal, Phone,
-  GraduationCap, Settings, Check, ChevronDown, ChevronRight, RefreshCw, Menu, X, User, ClipboardList
+  GraduationCap, Settings, Check, ChevronDown, ChevronRight, RefreshCw, Menu, X, User, ClipboardList, Video, Film, Download, Eye
 } from "lucide-react";
 import { cmsPages, type CmsSection, type CmsField, type CmsImageField } from "@/config/cmsConfig";
 import logoImg from "@/assets/logo.jpeg";
@@ -35,7 +35,15 @@ const AdminDashboard = () => {
   const [demoBookings, setDemoBookings] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
   const [admissions, setAdmissions] = useState<any[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  // New Note State
+  const [newNote, setNewNote] = useState({ title: "", className: "", file: null as File | null });
+  // New Video State
+  const [newVideo, setNewVideo] = useState({ title: "", category: "", video: null as File | null });
 
   // Profile State
   const [profileData, setProfileData] = useState({ email: "", password: "", confirmPassword: "" });
@@ -67,6 +75,8 @@ const AdminDashboard = () => {
     if (activePage === "demo-bookings") fetchDemos();
     if (activePage === "contacts") fetchContacts();
     if (activePage === "admissions") fetchAdmissions();
+    if (activePage === "notes") fetchAdminNotes();
+    if (activePage === "videos") fetchAdminVideos();
   }, [activePage]);
 
   const fetchEnquiries = async () => {
@@ -119,6 +129,120 @@ const AdminDashboard = () => {
       toast.error("Failed to load admissions");
     }
     setDataLoading(false);
+  };
+
+  const fetchAdminNotes = async () => {
+    setDataLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/notes`, {
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (res.ok) setNotes(await res.json());
+    } catch (e) {
+      toast.error("Failed to load notes");
+    }
+    setDataLoading(false);
+  };
+
+  const fetchAdminVideos = async () => {
+    setDataLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/videos`, {
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (res.ok) setVideos(await res.json());
+    } catch (e) {
+      toast.error("Failed to load videos");
+    }
+    setDataLoading(false);
+  };
+
+  const handleNoteUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newNote.file) return toast.error("Please select a file");
+    setSaving(true);
+    const formData = new FormData();
+    formData.append("title", newNote.title);
+    formData.append("className", newNote.className);
+    formData.append("file", newNote.file);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/notes/upload`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: formData,
+      });
+      if (res.ok) {
+        toast.success("Note uploaded successfully");
+        setNewNote({ title: "", className: "", file: null });
+        fetchAdminNotes();
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (err) {
+      toast.error("Failed to upload note");
+    }
+    setSaving(false);
+  };
+
+  const handleVideoUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVideo.video) return toast.error("Please select a video");
+    setSaving(true);
+    const formData = new FormData();
+    formData.append("title", newVideo.title);
+    formData.append("category", newVideo.category);
+    formData.append("video", newVideo.video);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/videos/upload`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
+        body: formData,
+      });
+      if (res.ok) {
+        toast.success("Video uploaded successfully");
+        setNewVideo({ title: "", category: "", video: null });
+        fetchAdminVideos();
+      } else {
+        throw new Error("Upload failed");
+      }
+    } catch (err) {
+      toast.error("Failed to upload video");
+    }
+    setSaving(false);
+  };
+
+  const deleteNote = async (id: string) => {
+    if (!confirm("Are you sure?")) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/notes/${id}`, { 
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (res.ok) {
+        toast.success("Note deleted");
+        fetchAdminNotes();
+      }
+    } catch (e) {
+      toast.error("Delete failed");
+    }
+  };
+
+  const deleteVideo = async (id: string) => {
+    if (!confirm("Are you sure?")) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/videos/${id}`, { 
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+      });
+      if (res.ok) {
+        toast.success("Video deleted");
+        fetchAdminVideos();
+      }
+    } catch (e) {
+      toast.error("Delete failed");
+    }
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -448,6 +572,165 @@ const AdminDashboard = () => {
     </div>
   );
 
+  const renderNotes = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold font-heading">Course Notes & PDFs</h2>
+        <Button variant="outline" size="sm" onClick={fetchAdminNotes} disabled={dataLoading}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} /> Refresh
+        </Button>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+        <h3 className="font-bold text-sm uppercase tracking-wider text-slate-400">Upload New Note</h3>
+        <form onSubmit={handleNoteUpload} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Note Title</label>
+            <Input 
+              placeholder="e.g. Maths Chapter 1" 
+              value={newNote.title} 
+              onChange={e => setNewNote({ ...newNote, title: e.target.value })} 
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Class Name</label>
+            <Input 
+              placeholder="e.g. Class 10" 
+              value={newNote.className} 
+              onChange={e => setNewNote({ ...newNote, className: e.target.value })} 
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-medium">PDF File (Max 100MB)</label>
+            <div className="flex gap-2">
+              <Input 
+                type="file" 
+                accept=".pdf" 
+                onChange={e => setNewNote({ ...newNote, file: e.target.files?.[0] || null })} 
+                required
+                className="text-xs h-10 pt-2 border-slate-200"
+              />
+              <Button type="submit" disabled={saving}>
+                {saving ? <Loader2 className="animate-spin w-4 h-4" /> : <Upload className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div className="grid gap-4">
+        {notes.map((note) => (
+          <div key={note._id} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                <FileText className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900">{note.title}</h4>
+                <p className="text-[10px] text-primary font-bold uppercase tracking-wider">
+                  {note.className} • {(note.fileSize / (1024 * 1024)).toFixed(2)} MB
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+               <a href={`${import.meta.env.VITE_API_BASE_URL}${note.fileUrl}`} target="_blank" rel="noopener noreferrer">
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-primary"><Eye className="w-4 h-4" /></Button>
+              </a>
+              <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-red-500" onClick={() => deleteNote(note._id)}>
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        ))}
+        {notes.length === 0 && (
+          <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
+             <FileText className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+             <p className="text-slate-400 text-sm">No notes uploaded yet.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderVideos = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold font-heading">Video Gallery Management</h2>
+        <Button variant="outline" size="sm" onClick={fetchAdminVideos} disabled={dataLoading}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} /> Refresh
+        </Button>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+        <h3 className="font-bold text-sm uppercase tracking-wider text-slate-400">Upload New Video</h3>
+        <form onSubmit={handleVideoUpload} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Video Title</label>
+            <Input 
+              placeholder="e.g. Annual Day 2024" 
+              value={newVideo.title} 
+              onChange={e => setNewVideo({ ...newVideo, title: e.target.value })} 
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Category</label>
+            <Input 
+              placeholder="e.g. Events" 
+              value={newVideo.category} 
+              onChange={e => setNewVideo({ ...newVideo, category: e.target.value })} 
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-medium">Video File (Max 500MB)</label>
+            <div className="flex gap-2">
+              <Input 
+                type="file" 
+                accept="video/*" 
+                onChange={e => setNewVideo({ ...newVideo, video: e.target.files?.[0] || null })} 
+                required
+                className="text-xs h-10 pt-2 border-slate-200"
+              />
+              <Button type="submit" disabled={saving}>
+                {saving ? <Loader2 className="animate-spin w-4 h-4" /> : <Upload className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {videos.map((video) => (
+          <div key={video._id} className="group bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+            <div className="aspect-video bg-slate-900 flex items-center justify-center relative">
+              <Video className="w-12 h-12 text-white/10" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
+                <Button size="icon" variant="destructive" onClick={() => deleteVideo(video._id)}>
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="p-4 flex justify-between items-center">
+              <div className="min-w-0">
+                <h4 className="font-bold text-slate-900 truncate">{video.title}</h4>
+                <p className="text-[10px] text-primary font-bold uppercase tracking-wider">{video.category}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+        {videos.length === 0 && (
+          <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200 sm:col-span-2 lg:col-span-3">
+             <Video className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+             <p className="text-slate-400 text-sm">No videos uploaded yet.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   const renderProfile = () => (
     <div className="max-w-xl mx-auto space-y-6">
       <h2 className="text-xl font-bold font-heading">My Profile</h2>
@@ -745,7 +1028,20 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* 4. Profile Section */}
+          {/* 4. Files Section */}
+          <div>
+            <div className="mb-3 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Resources</div>
+            <div className="space-y-1">
+              <button onClick={() => setActivePage("notes")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "notes" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+                <FileText className={`w-4 h-4 ${activePage === "notes" ? "text-white" : "text-slate-400"}`} /> Study Notes
+              </button>
+              <button onClick={() => setActivePage("videos")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "videos" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
+                <Film className={`w-4 h-4 ${activePage === "videos" ? "text-white" : "text-slate-400"}`} /> Video Gallery
+              </button>
+            </div>
+          </div>
+
+          {/* 5. Profile Section */}
           <div>
             <div className="mb-3 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Account</div>
             <button onClick={() => setActivePage("profile")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activePage === "profile" ? "bg-primary text-white shadow-lg shadow-primary/25" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"}`}>
@@ -777,7 +1073,7 @@ const AdminDashboard = () => {
             </button>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-slate-900">
-                {activePage === "admissions" ? "Student Admissions" : activePage === "enquiries" ? "General Enquiries" : activePage === "demo-bookings" ? "Demo Class Bookings" : activePage === "contacts" ? "Contact Messages" : activePage === "profile" ? "My Account Profile" : (pageConfig?.label || activePage)}
+                {activePage === "admissions" ? "Student Admissions" : activePage === "enquiries" ? "General Enquiries" : activePage === "demo-bookings" ? "Demo Class Bookings" : activePage === "contacts" ? "Contact Messages" : activePage === "notes" ? "Study Notes & PDFs" : activePage === "videos" ? "Video Gallery Management" : activePage === "profile" ? "My Account Profile" : (pageConfig?.label || activePage)}
               </h1>
               <p className="text-xs text-slate-400 font-medium">Dashboard / {activePage.charAt(0).toUpperCase() + activePage.slice(1)}</p>
             </div>
@@ -807,6 +1103,8 @@ const AdminDashboard = () => {
             {activePage === "enquiries" && renderEnquiries()}
             {activePage === "demo-bookings" && renderDemoBookings()}
             {activePage === "contacts" && renderContacts()}
+            {activePage === "notes" && renderNotes()}
+            {activePage === "videos" && renderVideos()}
             {activePage === "profile" && renderProfile()}
 
             {isCmsPage && (
